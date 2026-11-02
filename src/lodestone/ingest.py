@@ -39,6 +39,7 @@ def ingest(source_path: str | pathlib.Path, store: SongStore) -> str:
         "song_id": song_id,
         "title": source_path.stem,
         "duration_s": 0.0,  # stub: real code reads this from the WAV header
+        "low_note_mode": "drop",
         "stages": {
             "ingest": "done",
             "separate": "pending",

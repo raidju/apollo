@@ -1,31 +1,31 @@
-# Stub: fakes P4 (Basic Pitch note transcription).
-# Real replacement: call basic_pitch.inference.predict on
-# stems/<target>.wav and convert numpy output to plain Python floats
-# before writing (Basic Pitch returns numpy types, not JSON-serialisable).
-
 from lodestone.store import SongStore
 
 
-# Three notes that cover low, mid, and high guitar range.
-# All have start_s < end_s, midi in [40, 88], amplitude in [0.0, 1.0],
-# and are sorted by start_s so the chart stub receives valid input.
-_STUB_EVENTS = [
-    {"start_s": 0.5, "end_s": 1.0, "midi": 40, "amplitude": 0.8},
-    {"start_s": 1.5, "end_s": 2.0, "midi": 52, "amplitude": 0.7},
-    {"start_s": 2.5, "end_s": 3.0, "midi": 64, "amplitude": 0.9},
-]
-
-
 def transcribe(song_id: str, target: str, store: SongStore) -> None:
-    """Write a hardcoded raw note list for the given target.
+    """Run Basic Pitch on stems/<target>.wav and write notes/<target>.json.
 
-    The stub emits three notes covering the guitar's playable range.
-    Real code runs Basic Pitch on stems/<target>.wav and converts its
-    numpy arrays to plain Python numbers before saving.
+    Basic Pitch returns numpy types; every value is explicitly cast to a
+    plain Python type before writing so the JSON serialiser doesn't fail.
     """
-    notes_data = {
+    from basic_pitch.inference import predict
+    from basic_pitch import ICASSP_2022_MODEL_PATH
+
+    stem = store.stem_path(song_id, target)
+    _model_output, _midi_data, note_events = predict(str(stem), ICASSP_2022_MODEL_PATH)
+
+    events = []
+    for start_s, end_s, pitch_midi, amplitude, _bends in note_events:
+        events.append({
+            "start_s": float(start_s),
+            "end_s": float(end_s),
+            "midi": int(pitch_midi),
+            "amplitude": float(amplitude),
+        })
+
+    events.sort(key=lambda e: e["start_s"])
+
+    store.write_notes(song_id, target, {
         "schema_version": 1,
         "target": target,
-        "events": _STUB_EVENTS,
-    }
-    store.write_notes(song_id, target, notes_data)
+        "events": events,
+    })
