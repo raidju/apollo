@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "song_id": "3f9a1c0e7b2d4a61",
+  "title": "Sample Song",
+  "duration_s": 212.48,
+  "stages": {
+    "ingest": "done",
+    "separate": "done",
+    "transcribe": {"guitar": "done"},
+    "chart": {"guitar": "done"}
+  },
+  "error": null
+}

@@ -1,20 +1,47 @@
 [project]
 name = "lodestone"
 version = "0.1.0"
-description = "Add your description here"
+description = "Instrument practice app: tuner, auto charts, and scored play-along"
 readme = "README.md"
 authors = [
     { name = "singularity", email = "83964768+Singularety@users.noreply.github.com" }
 ]
-requires-python = ">=3.12"
-dependencies = []
+requires-python = "==3.12.*"
+dependencies = [
+  "imageio-ffmpeg",
+  "sounddevice",
+  "soundfile",
+  "numpy",
+  "librosa",
+  "mir-eval",
+  "setuptools<81",
+]
+
+[project.optional-dependencies]
+ml = [
+  "basic-pitch==0.4.0",
+  "demucs==4.1.0",
+  "onnxruntime",
+]
 
 [project.scripts]
-the-boondoggle = "lodestone:main"
+lodestone = "lodestone:main"
 
 [build-system]
-requires = ["uv_build>=0.12.15,<0.13.0"]
+requires = ["uv_build>=0.12.15,<0.14"]
 build-backend = "uv_build"
+
+[tool.uv]
+environments = [
+  "sys_platform == 'win32' and platform_machine == 'AMD64'",
+  "sys_platform == 'darwin' and platform_machine == 'arm64'",
+  "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+override-dependencies = [
+  "tensorflow; sys_platform == 'never'",
+  "tensorflow-macos; sys_platform == 'never'",
+  "coremltools; sys_platform == 'never'",
+]
 
 [dependency-groups]
 dev = [

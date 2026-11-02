@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "instrument": "guitar",
+  "tuning": [40, 45, 50, 55, 59, 64],
+  "capo": 0,
+  "notes": [
+    {"id": 0, "start_s": 1.0, "end_s": 1.4, "midi": 40, "string": 0, "fret": 0, "chord": null},
+    {"id": 1, "start_s": 2.0, "end_s": 2.5, "midi": 64, "string": 4, "fret": 5, "chord": null}
+  ]
+}

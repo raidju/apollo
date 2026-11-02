@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "target": "guitar",
+  "events": [
+    {"start_s": 12.304, "end_s": 12.771, "midi": 64, "amplitude": 0.62}
+  ]
+}
