@@ -8,12 +8,12 @@ from collections import defaultdict
 
 import pytest
 
-from lodestone.chart import build_chart
-from lodestone.ingest import ingest
-from lodestone.jobs import start_prep
-from lodestone.separate import separate
-from lodestone.store import SongStore
-from lodestone.transcribe import transcribe
+from apollo.chart import build_chart
+from apollo.ingest import ingest
+from apollo.jobs import start_prep
+from apollo.separate import separate
+from apollo.store import SongStore
+from apollo.transcribe import transcribe
 
 
 SAMPLE_WAV = pathlib.Path(__file__).parent / "fixtures" / "sample.wav"

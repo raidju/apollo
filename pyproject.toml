@@ -1,5 +1,5 @@
 [project]
-name = "lodestone"
+name = "apollo"
 version = "0.1.0"
 description = "Instrument practice app: tuner, auto charts, and scored play-along"
 readme = "README.md"
@@ -25,7 +25,7 @@ ml = [
 ]
 
 [project.scripts]
-lodestone = "lodestone:main"
+apollo = "apollo:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.14"]
@@ -47,4 +47,5 @@ override-dependencies = [
 dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.8",
+    "pyinstaller>=6.0",
 ]

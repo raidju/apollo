@@ -9,7 +9,7 @@ from __future__ import annotations
 import multiprocessing
 import pathlib
 
-from lodestone.store import SongStore
+from apollo.store import SongStore
 
 
 def start_prep(
@@ -41,9 +41,9 @@ def _run_prep(song_id: str, target: str, store_root: pathlib.Path) -> None:
     and exits with a non-zero code.
     """
     # Import here so the imports only happen inside the child process.
-    from lodestone.chart import build_chart
-    from lodestone.separate import separate
-    from lodestone.transcribe import transcribe
+    from apollo.chart import build_chart
+    from apollo.separate import separate
+    from apollo.transcribe import transcribe
 
     store = SongStore(store_root)
 

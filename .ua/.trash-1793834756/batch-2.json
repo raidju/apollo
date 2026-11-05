@@ -1,0 +1,341 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lodestone/chart.py",
+      "type": "file",
+      "name": "chart.py",
+      "filePath": "src/lodestone/chart.py",
+      "summary": "Builds guitar charts from raw Basic Pitch note events, applying noise cleaning, octave-shift correction, ghost-note removal, and string/fret assignment, then persisting the result via SongStore.",
+      "tags": ["data-model", "utility", "service"],
+      "complexity": "complex",
+      "languageNotes": "Uses Python 3.10+ union-type hints (tuple[int, int] | None) and defaultdict for per-MIDI grouping passes."
+    },
+    {
+      "id": "function:src/lodestone/chart.py:build_chart",
+      "type": "function",
+      "name": "build_chart",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [25, 85],
+      "summary": "Orchestrates the full chart-building pipeline: reads raw notes from the store, runs all cleaning/shift passes, assigns string and fret positions, then writes the final chart JSON.",
+      "tags": ["service", "entry-point", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:clean_notes",
+      "type": "function",
+      "name": "clean_notes",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [88, 97],
+      "summary": "Removes junk from a raw Basic Pitch note list by running four sequential filter passes: out-of-range, too-short/too-quiet, octave doubles, and same-pitch merging.",
+      "tags": ["utility", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_apply_shifts",
+      "type": "function",
+      "name": "_apply_shifts",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [100, 120],
+      "summary": "Applies octave-up shifts to notes below the minimum playable MIDI pitch when low_note_mode is 'shift', stamping shift metadata onto each event.",
+      "tags": ["utility", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_merge_shifted_duplicates",
+      "type": "function",
+      "name": "_merge_shifted_duplicates",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [123, 156],
+      "summary": "Merges same-pitch notes that overlap after octave shifting, using earliest start, latest end, and loudest amplitude, preserving shift metadata for the merged note.",
+      "tags": ["utility", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_drop_octave_doubles",
+      "type": "function",
+      "name": "_drop_octave_doubles",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [180, 198],
+      "summary": "Drops the quieter of two notes when they start within the onset window and are an octave or octave+fifth apart, eliminating harmonic doubling artifacts.",
+      "tags": ["utility", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_merge_same_pitch",
+      "type": "function",
+      "name": "_merge_same_pitch",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [201, 225],
+      "summary": "Merges contiguous or overlapping notes at the same MIDI pitch into a single note spanning their combined duration at the loudest amplitude.",
+      "tags": ["utility", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_assign_string_fret",
+      "type": "function",
+      "name": "_assign_string_fret",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [241, 266],
+      "summary": "Returns the optimal (string, fret) tuple for a MIDI note, preferring positions within 4 frets of the previous placement to minimize hand movement, falling back to globally lowest fret.",
+      "tags": ["utility", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/ingest.py",
+      "type": "file",
+      "name": "ingest.py",
+      "filePath": "src/lodestone/ingest.py",
+      "summary": "Imports a song file into the project by computing a SHA-256-based song ID, copying the audio file, and writing an initial song.json with all prep stages set to pending.",
+      "tags": ["service", "entry-point", "utility"],
+      "complexity": "simple",
+      "languageNotes": "Currently a stub that copies files as-is; real implementation would decode any format to 44.1 kHz stereo WAV via imageio-ffmpeg."
+    },
+    {
+      "id": "function:src/lodestone/ingest.py:ingest",
+      "type": "function",
+      "name": "ingest",
+      "filePath": "src/lodestone/ingest.py",
+      "lineRange": [14, 53],
+      "summary": "Imports a song file, derives its song_id from the SHA-256 hash prefix, copies the audio to the song directory, and writes an initial song.json skeleton.",
+      "tags": ["service", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lodestone/separate.py",
+      "type": "file",
+      "name": "separate.py",
+      "filePath": "src/lodestone/separate.py",
+      "summary": "Runs the Demucs htdemucs_6s model on a song's mix.wav to produce six per-stem WAV files and a backing track that sums all stems except the target instrument.",
+      "tags": ["service", "utility"],
+      "complexity": "simple",
+      "languageNotes": "Imports torch and demucs lazily (inside the function) to keep them out of the UI process, honoring the architecture rule that the UI never imports heavy ML libraries."
+    },
+    {
+      "id": "function:src/lodestone/separate.py:separate",
+      "type": "function",
+      "name": "separate",
+      "filePath": "src/lodestone/separate.py",
+      "lineRange": [9, 32],
+      "summary": "Splits mix.wav into per-stem WAVs using Demucs htdemucs_6s, then sums and clamps all non-target stems to produce the backing/<target>.wav file.",
+      "tags": ["service", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lodestone/store.py",
+      "type": "file",
+      "name": "store.py",
+      "filePath": "src/lodestone/store.py",
+      "summary": "Central file-access layer for the lodestone song folder layout, providing atomic JSON read/write, path helpers, and schema version validation through the SongStore class.",
+      "tags": ["service", "data-model", "utility"],
+      "complexity": "moderate",
+      "languageNotes": "Uses atomic write-then-rename (os.replace) so a crash never leaves a corrupt JSON file; schema version is enforced on every read."
+    },
+    {
+      "id": "class:src/lodestone/store.py:SongStore",
+      "type": "class",
+      "name": "SongStore",
+      "filePath": "src/lodestone/store.py",
+      "lineRange": [23, 110],
+      "summary": "Provides all read/write operations for the songs directory tree, including path resolution helpers and atomic JSON persistence with schema version checking.",
+      "tags": ["service", "data-model", "singleton"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/transcribe.py",
+      "type": "file",
+      "name": "transcribe.py",
+      "filePath": "src/lodestone/transcribe.py",
+      "summary": "Runs Basic Pitch polyphonic pitch detection on a stem WAV file and writes the resulting note events (start_s, end_s, midi, amplitude) as notes/<target>.json via SongStore.",
+      "tags": ["service", "utility"],
+      "complexity": "simple",
+      "languageNotes": "Imports basic_pitch lazily inside the function to keep the heavy ML dependency out of the UI process, and explicitly casts all numpy types to plain Python types before JSON serialisation."
+    },
+    {
+      "id": "function:src/lodestone/transcribe.py:transcribe",
+      "type": "function",
+      "name": "transcribe",
+      "filePath": "src/lodestone/transcribe.py",
+      "lineRange": [4, 31],
+      "summary": "Runs Basic Pitch on the stem WAV for a target instrument and writes normalised note events (plain Python types, sorted by start_s) to notes/<target>.json.",
+      "tags": ["service", "utility"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/ingest.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/separate.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/transcribe.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:build_chart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:clean_notes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_apply_shifts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_merge_shifted_duplicates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_drop_octave_doubles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_merge_same_pitch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_assign_string_fret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:build_chart",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:clean_notes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/ingest.py",
+      "target": "function:src/lodestone/ingest.py:ingest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/ingest.py",
+      "target": "function:src/lodestone/ingest.py:ingest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/separate.py",
+      "target": "function:src/lodestone/separate.py:separate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/separate.py",
+      "target": "function:src/lodestone/separate.py:separate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/store.py",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/store.py",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/transcribe.py",
+      "target": "function:src/lodestone/transcribe.py:transcribe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/transcribe.py",
+      "target": "function:src/lodestone/transcribe.py:transcribe",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/chart.py:build_chart",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/ingest.py:ingest",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/separate.py:separate",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/transcribe.py:transcribe",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

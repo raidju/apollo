@@ -1,4 +1,4 @@
-from lodestone.store import SongStore
+from apollo.store import SongStore
 
 
 def transcribe(song_id: str, target: str, store: SongStore) -> None:

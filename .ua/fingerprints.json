@@ -1,0 +1,1733 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "5dcdfb09719f9cd7c0b298324fc57bbe36eda255",
+  "generatedAt": "2026-11-04T23:25:49.429Z",
+  "files": {
+    ".gitattributes": {
+      "filePath": ".gitattributes",
+      "contentHash": "44674b3160def05bf2e4c1544d8a36fb5c9a63ce4e9f88b89a2d9b51eb0c0974",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    ".python-version": {
+      "filePath": ".python-version",
+      "contentHash": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "557f463339ac94921c7e3012ec70bb98c664c11acc075b4e148082dbe88c9127",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 99,
+      "hasStructuralAnalysis": false
+    },
+    "docs/ARCHITECTURE.md": {
+      "filePath": "docs/ARCHITECTURE.md",
+      "contentHash": "804fc2d19829ff677aeb7933f4e3d33fd27ea43bff37632941d06e29db09ff12",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 248,
+      "hasStructuralAnalysis": false
+    },
+    "docs/specs/pitch.md": {
+      "filePath": "docs/specs/pitch.md",
+      "contentHash": "dbb37ff135e7cdd2cb94f148dd710983e4bc2f87f70bac936feb08399c8e70df",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 67,
+      "hasStructuralAnalysis": false
+    },
+    "docs/specs/walking-skeleton.md": {
+      "filePath": "docs/specs/walking-skeleton.md",
+      "contentHash": "2ad492b5b97917348d3950c89efb86a796bec9868dfb362bd2c9cfa5cc4a3408",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 144,
+      "hasStructuralAnalysis": false
+    },
+    "pyproject.toml": {
+      "filePath": "pyproject.toml",
+      "contentHash": "e7e1609755a7e9b240d2cb22818c385d4935ef04f1c0be4c1170e40d395eae64",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 51,
+      "hasStructuralAnalysis": false
+    },
+    "src/lodestone/__init__.py": {
+      "filePath": "src/lodestone/__init__.py",
+      "contentHash": "dd9f3085773ddecb0b3115ef5b1de243aac80d40b662f59095e8673899022391",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "main"
+      ],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/chart.py": {
+      "filePath": "src/lodestone/chart.py",
+      "contentHash": "533246ec4882de651854a96c32ccfb71d8e6a4c09f2be87d0b5ca8e064c72434",
+      "functions": [
+        {
+          "name": "build_chart",
+          "params": [
+            "song_id",
+            "target",
+            "store"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 61
+        },
+        {
+          "name": "clean_notes",
+          "params": [
+            "events"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_apply_shifts",
+          "params": [
+            "events",
+            "low_note_mode"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_merge_shifted_duplicates",
+          "params": [
+            "events"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_shift_to_playable",
+          "params": [
+            "midi"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_drop_out_of_range",
+          "params": [
+            "events"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_drop_short_or_quiet",
+          "params": [
+            "events"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_drop_octave_doubles",
+          "params": [
+            "events"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_merge_same_pitch",
+          "params": [
+            "events"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_is_ghost",
+          "params": [
+            "note",
+            "all_events"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_assign_string_fret",
+          "params": [
+            "midi",
+            "prev_fret",
+            "last_end",
+            "start_s"
+          ],
+          "returnType": "tuple[int, int] | None",
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections",
+          "specifiers": [
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "build_chart",
+        "clean_notes",
+        "_apply_shifts",
+        "_merge_shifted_duplicates",
+        "_shift_to_playable",
+        "_drop_out_of_range",
+        "_drop_short_or_quiet",
+        "_drop_octave_doubles",
+        "_merge_same_pitch",
+        "_is_ghost",
+        "_assign_string_fret"
+      ],
+      "totalLines": 267,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/dev_gui.py": {
+      "filePath": "src/lodestone/dev_gui.py",
+      "contentHash": "1c1d63e0bc92b0d02099a7fb471fbc3f89b4b78c76110abff7fda8720a99e372",
+      "functions": [
+        {
+          "name": "string_name",
+          "params": [
+            "string_index"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "cents_to_needle_x",
+          "params": [
+            "cents",
+            "bar_width"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "time_to_x",
+          "params": [
+            "seconds"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "string_to_y",
+          "params": [
+            "string_index"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "play_line_seconds",
+          "params": [
+            "elapsed_s",
+            "duration_s"
+          ],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "active_note_ids",
+          "params": [
+            "chart",
+            "t"
+          ],
+          "returnType": "set[int]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "list_songs",
+          "params": [
+            "store"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "stage_row",
+          "params": [
+            "song",
+            "target"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "TunerTab",
+          "methods": [
+            "__init__",
+            "_setup_widgets",
+            "_toggle",
+            "_start",
+            "_stop",
+            "_audio_callback",
+            "_poll_pitch",
+            "_update_display",
+            "_draw_needle",
+            "close"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 213
+        },
+        {
+          "name": "SongsTab",
+          "methods": [
+            "__init__",
+            "_setup_widgets",
+            "_row_tag",
+            "_refresh",
+            "_on_select",
+            "_find_song",
+            "_import",
+            "_start_prep",
+            "_poll_prep",
+            "_open_in_chart"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 220
+        },
+        {
+          "name": "ChartTab",
+          "methods": [
+            "__init__",
+            "_setup_widgets",
+            "load_chart",
+            "_draw_chart",
+            "_load_sample",
+            "_toggle_play",
+            "_play",
+            "_stop_play",
+            "_stop_play_silent",
+            "_reset_note_colors",
+            "_poll_play",
+            "_auto_scroll_to"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 294
+        },
+        {
+          "name": "App",
+          "methods": [
+            "__init__",
+            "_apply_style",
+            "_build_layout",
+            "_on_tab_change",
+            "_update_header",
+            "_on_close"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 155
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "threading",
+          "specifiers": [
+            "threading"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "tkinter",
+          "specifiers": [
+            "tk"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "deque"
+          ]
+        },
+        {
+          "source": "tkinter",
+          "specifiers": [
+            "filedialog",
+            "ttk"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "lodestone",
+          "specifiers": [
+            "jobs"
+          ]
+        },
+        {
+          "source": "lodestone.ingest",
+          "specifiers": [
+            "ingest"
+          ]
+        },
+        {
+          "source": "lodestone.pitch",
+          "specifiers": [
+            "detect"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        },
+        {
+          "source": "lodestone.tuner",
+          "specifiers": [
+            "Tuner",
+            "TunerDisplay"
+          ]
+        }
+      ],
+      "exports": [
+        "string_name",
+        "cents_to_needle_x",
+        "time_to_x",
+        "string_to_y",
+        "play_line_seconds",
+        "active_note_ids",
+        "list_songs",
+        "stage_row",
+        "TunerTab",
+        "SongsTab",
+        "ChartTab",
+        "App",
+        "main"
+      ],
+      "totalLines": 1085,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/ingest.py": {
+      "filePath": "src/lodestone/ingest.py",
+      "contentHash": "11318e31942a8bd82620de36c078ebf907585e68225670ec731dd9ad2cfdf18e",
+      "functions": [
+        {
+          "name": "ingest",
+          "params": [
+            "source_path",
+            "store"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "_sha256_prefix",
+          "params": [
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "shutil",
+          "specifiers": [
+            "shutil"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "ingest",
+        "_sha256_prefix"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/jobs.py": {
+      "filePath": "src/lodestone/jobs.py",
+      "contentHash": "b69a6f27f0fcac4a264c2923b6b0db08b20aa12a36dd15106297e85901bca07c",
+      "functions": [
+        {
+          "name": "start_prep",
+          "params": [
+            "song_id",
+            "target",
+            "store_root"
+          ],
+          "returnType": "multiprocessing.Process",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_run_prep",
+          "params": [
+            "song_id",
+            "target",
+            "store_root"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "_set_stage",
+          "params": [
+            "song_id",
+            "stage",
+            "value",
+            "store",
+            "sub"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "multiprocessing",
+          "specifiers": [
+            "multiprocessing"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "start_prep",
+        "_run_prep",
+        "_set_stage"
+      ],
+      "totalLines": 84,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/pitch.py": {
+      "filePath": "src/lodestone/pitch.py",
+      "contentHash": "d6cdf7dcff57ed47732f2b786d6bcce7cfd21bf725640bfde45abc17712435b2",
+      "functions": [
+        {
+          "name": "detect",
+          "params": [
+            "frame",
+            "sample_rate",
+            "tau_min",
+            "tau_max"
+          ],
+          "returnType": "PitchReading",
+          "exported": true,
+          "lineCount": 72
+        }
+      ],
+      "classes": [
+        {
+          "name": "PitchReading",
+          "methods": [],
+          "properties": [
+            "freq_hz",
+            "midi",
+            "confidence",
+            "rms"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Optional"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        }
+      ],
+      "exports": [
+        "PitchReading",
+        "detect"
+      ],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/separate.py": {
+      "filePath": "src/lodestone/separate.py",
+      "contentHash": "cb98fb51fb9d14d7c1ec7d5061e5fa0861f0a2322fa88194b1aca66885dc00b2",
+      "functions": [
+        {
+          "name": "separate",
+          "params": [
+            "song_id",
+            "target",
+            "store"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "torch",
+          "specifiers": [
+            "torch"
+          ]
+        },
+        {
+          "source": "soundfile",
+          "specifiers": [
+            "sf"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "separate"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/store.py": {
+      "filePath": "src/lodestone/store.py",
+      "contentHash": "3adb370735701f5c9a366515df4d68b71238191d9ba3d444db03b738bd4e5511",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SchemaError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "SongStore",
+          "methods": [
+            "__init__",
+            "song_dir",
+            "song_path",
+            "mix_path",
+            "stem_path",
+            "backing_path",
+            "notes_path",
+            "chart_path",
+            "read_song",
+            "write_song",
+            "read_notes",
+            "write_notes",
+            "read_chart",
+            "write_chart",
+            "_read_json",
+            "_atomic_write",
+            "_check_schema"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 88
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "SchemaError",
+        "SongStore"
+      ],
+      "totalLines": 111,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/transcribe.py": {
+      "filePath": "src/lodestone/transcribe.py",
+      "contentHash": "762a4e98e318a9e58b36f18fb7947ebb5acf48860d44220112258ff4a8af1dfd",
+      "functions": [
+        {
+          "name": "transcribe",
+          "params": [
+            "song_id",
+            "target",
+            "store"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "transcribe"
+      ],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "src/lodestone/tuner.py": {
+      "filePath": "src/lodestone/tuner.py",
+      "contentHash": "72eb87be16f9f336b9ab04f5e964be579acdfa7eb34b0af328e483ec7e810737",
+      "functions": [
+        {
+          "name": "_midi_to_note_name",
+          "params": [
+            "midi_int"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_nearest_string",
+          "params": [
+            "midi_int"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "TunerDisplay",
+          "methods": [],
+          "properties": [
+            "note_name",
+            "cents",
+            "likely_string",
+            "in_tune"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "Tuner",
+          "methods": [
+            "__init__",
+            "update",
+            "reset"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "imports": [
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "deque"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Optional"
+          ]
+        },
+        {
+          "source": "lodestone.pitch",
+          "specifiers": [
+            "PitchReading"
+          ]
+        }
+      ],
+      "exports": [
+        "TunerDisplay",
+        "_midi_to_note_name",
+        "_nearest_string",
+        "Tuner"
+      ],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "tests/conftest.py": {
+      "filePath": "tests/conftest.py",
+      "contentHash": "886d33bea20c0d430d7377a9c7a28d6a57d2060f1ffd070bda237504d001d8dc",
+      "functions": [
+        {
+          "name": "_make_sample_wav",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "struct",
+          "specifiers": [
+            "struct"
+          ]
+        },
+        {
+          "source": "wave",
+          "specifiers": [
+            "wave"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_sample_wav"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "tests/fixtures/chart/guitar.json": {
+      "filePath": "tests/fixtures/chart/guitar.json",
+      "contentHash": "735030d7c7e08effb8332849d6dca7144d290ff0ba8b8256488f209b89e2f9e6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "tests/fixtures/notes/guitar.json": {
+      "filePath": "tests/fixtures/notes/guitar.json",
+      "contentHash": "40aaeb8e2c8cba78e39c94e7bafc4c375dc8efe3018f62a47c965c196424b449",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "tests/fixtures/played_event.json": {
+      "filePath": "tests/fixtures/played_event.json",
+      "contentHash": "9e4707cc75ab2345bfd7d60f17a25f4aa2e9a383c032faf5a6f5c8ca4c2e0e16",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "tests/fixtures/sample.wav": {
+      "filePath": "tests/fixtures/sample.wav",
+      "contentHash": "d9e7dc96b0e7e47c391f5024e67cbc91a7503e8f381da3e4e8fea31d6b1cab55",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 781,
+      "hasStructuralAnalysis": false
+    },
+    "tests/fixtures/session_score.json": {
+      "filePath": "tests/fixtures/session_score.json",
+      "contentHash": "13bfaa3e03667df06b45e5228e88f86eaaaf004102912c5a4a92980f511e398d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "tests/fixtures/song.json": {
+      "filePath": "tests/fixtures/song.json",
+      "contentHash": "3ec25c74eab957285d3e167e5a7c83e5fda66e6cf06884704bdfbe71190649ed",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "tests/test_chart_guarantees.py": {
+      "filePath": "tests/test_chart_guarantees.py",
+      "contentHash": "1a823f075c8505c4807d0b8b3e2d2ea2d7e684b1e92162ca11d24d577bb262fa",
+      "functions": [
+        {
+          "name": "_load",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_guarantee_1_sorted_by_start",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_guarantee_2_end_after_start",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_guarantee_3_string_fret_midi",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_guarantee_4_no_string_overlap",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_guarantee_5_playable_fret",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_ev",
+          "params": [
+            "midi",
+            "start",
+            "end",
+            "amplitude"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_clean_drop_out_of_range",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_clean_drop_short_or_quiet",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_clean_drop_octave_doubles",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_clean_merge_same_pitch",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_shift_to_playable",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_merge_shifted_duplicates",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "lodestone.chart",
+          "specifiers": [
+            "_drop_out_of_range",
+            "_drop_short_or_quiet",
+            "_drop_octave_doubles",
+            "_merge_same_pitch",
+            "_merge_shifted_duplicates",
+            "_shift_to_playable"
+          ]
+        }
+      ],
+      "exports": [
+        "_load",
+        "test_guarantee_1_sorted_by_start",
+        "test_guarantee_2_end_after_start",
+        "test_guarantee_3_string_fret_midi",
+        "test_guarantee_4_no_string_overlap",
+        "test_guarantee_5_playable_fret",
+        "_ev",
+        "test_clean_drop_out_of_range",
+        "test_clean_drop_short_or_quiet",
+        "test_clean_drop_octave_doubles",
+        "test_clean_merge_same_pitch",
+        "test_shift_to_playable",
+        "test_merge_shifted_duplicates"
+      ],
+      "totalLines": 162,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_dev_gui.py": {
+      "filePath": "tests/test_dev_gui.py",
+      "contentHash": "031ff41eef51ac702b5d8d074de8a36e0d0a3c7d02070391be15c50db763b371",
+      "functions": [
+        {
+          "name": "test_no_heavy_imports",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_cents_to_needle_x",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_string_to_y",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_time_to_x",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_list_songs",
+          "params": [
+            "tmp_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_stage_row",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_play_line_seconds",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_active_note_ids",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "lodestone.dev_gui",
+          "specifiers": [
+            "active_note_ids",
+            "cents_to_needle_x",
+            "list_songs",
+            "play_line_seconds",
+            "stage_row",
+            "string_to_y",
+            "time_to_x"
+          ]
+        },
+        {
+          "source": "lodestone.ingest",
+          "specifiers": [
+            "ingest"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "test_no_heavy_imports",
+        "test_cents_to_needle_x",
+        "test_string_to_y",
+        "test_time_to_x",
+        "test_list_songs",
+        "test_stage_row",
+        "test_play_line_seconds",
+        "test_active_note_ids"
+      ],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_formats.py": {
+      "filePath": "tests/test_formats.py",
+      "contentHash": "24d1eef38683ca2d24480d67b383507954327538e80455ef2933d54e388b80db",
+      "functions": [
+        {
+          "name": "_stage_values",
+          "params": [
+            "stages"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_song_json",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_notes_guitar_json",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_chart_guitar_json",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_played_event_json",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_session_score_json",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        }
+      ],
+      "exports": [
+        "_stage_values",
+        "test_song_json",
+        "test_notes_guitar_json",
+        "test_chart_guitar_json",
+        "test_played_event_json",
+        "test_session_score_json"
+      ],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_pitch_tuner.py": {
+      "filePath": "tests/test_pitch_tuner.py",
+      "contentHash": "8f3e200deaef21946b49a32de5b0ef3cb9361a3310057c2a5c64207b28afdfac",
+      "functions": [
+        {
+          "name": "sine_frame",
+          "params": [
+            "freq_hz"
+          ],
+          "returnType": "np.ndarray",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "freq_to_cents_error",
+          "params": [
+            "detected_hz",
+            "expected_hz"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_open_strings",
+          "params": [
+            "freq_hz",
+            "expected_midi"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_sharp_10_cents",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_silence_returns_none",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_noise_low_confidence",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_tuner_note_name_and_string",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_tuner_returns_none_on_silence",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "math",
+          "specifiers": [
+            "math"
+          ]
+        },
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "lodestone.pitch",
+          "specifiers": [
+            "PitchReading",
+            "detect"
+          ]
+        },
+        {
+          "source": "lodestone.tuner",
+          "specifiers": [
+            "STANDARD_TUNING",
+            "Tuner"
+          ]
+        }
+      ],
+      "exports": [
+        "sine_frame",
+        "freq_to_cents_error",
+        "test_open_strings",
+        "test_sharp_10_cents",
+        "test_silence_returns_none",
+        "test_noise_low_confidence",
+        "test_tuner_note_name_and_string",
+        "test_tuner_returns_none_on_silence"
+      ],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_prep.py": {
+      "filePath": "tests/test_prep.py",
+      "contentHash": "3af545ab78076c7899d6119436fff70aa23cff5922592e3e48bbbd0cf39eaa93",
+      "functions": [
+        {
+          "name": "_make_store",
+          "params": [
+            "tmp_path"
+          ],
+          "returnType": "SongStore",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_ingest_sample",
+          "params": [
+            "store",
+            "tmp_path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_ingest",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_separate",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_transcribe",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "test_chart_stub",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "test_jobs_stages",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "pathlib"
+          ]
+        },
+        {
+          "source": "shutil",
+          "specifiers": [
+            "shutil"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "lodestone.chart",
+          "specifiers": [
+            "build_chart"
+          ]
+        },
+        {
+          "source": "lodestone.ingest",
+          "specifiers": [
+            "ingest"
+          ]
+        },
+        {
+          "source": "lodestone.jobs",
+          "specifiers": [
+            "start_prep"
+          ]
+        },
+        {
+          "source": "lodestone.separate",
+          "specifiers": [
+            "separate"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SongStore"
+          ]
+        },
+        {
+          "source": "lodestone.transcribe",
+          "specifiers": [
+            "transcribe"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_store",
+        "_ingest_sample",
+        "test_ingest",
+        "test_separate",
+        "test_transcribe",
+        "test_chart_stub",
+        "test_jobs_stages"
+      ],
+      "totalLines": 154,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_store.py": {
+      "filePath": "tests/test_store.py",
+      "contentHash": "bcb10f7576c5580e6f112539d6ba70ba7dd4492b9eaa4a69cc0b95c933bc8048",
+      "functions": [
+        {
+          "name": "test_song_round_trip",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_notes_round_trip",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_chart_round_trip",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_atomic_write_no_tmp_left",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_schema_error_on_wrong_version",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_schema_error_on_missing_version",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_path_structure",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "lodestone.store",
+          "specifiers": [
+            "SchemaError",
+            "SongStore"
+          ]
+        }
+      ],
+      "exports": [
+        "test_song_round_trip",
+        "test_notes_round_trip",
+        "test_chart_round_trip",
+        "test_atomic_write_no_tmp_left",
+        "test_schema_error_on_wrong_version",
+        "test_schema_error_on_missing_version",
+        "test_path_structure"
+      ],
+      "totalLines": 91,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

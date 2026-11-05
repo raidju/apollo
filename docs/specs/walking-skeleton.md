@@ -9,7 +9,7 @@ runs the whole app end to end.
 Observable outcome:
 
 ```
-uv run python -m lodestone demo tests/fixtures/sample.wav
+uv run python -m apollo demo tests/fixtures/sample.wav
 ```
 
 1. Imports the file (song_id = first 16 hex chars of SHA-256).
@@ -59,7 +59,7 @@ so the base install would fail on Windows AMD64.
 | Path | What it is |
 |------|------------|
 | `docs/ARCHITECTURE.md` | Copy from source; defines fixed handoff shapes |
-| `src/lodestone/store.py` | Real implementation — atomic writes, schema checks |
+| `src/apollo/store.py` | Real implementation — atomic writes, schema checks |
 | `tests/conftest.py` | Generates `tests/fixtures/sample.wav` on first run |
 | `tests/fixtures/song.json` | Example song.json from ARCHITECTURE.md |
 | `tests/fixtures/notes/guitar.json` | Example raw notes from ARCHITECTURE.md |
@@ -82,11 +82,11 @@ so the base install would fail on Windows AMD64.
 
 | Module | Fakes | Real replacement |
 |--------|-------|-----------------|
-| `src/lodestone/ingest.py` | P1 + P2 | SHA-256 ID, validity check, ffmpeg decode |
-| `src/lodestone/separate.py` | P3 | `demucs.api.Separator` |
-| `src/lodestone/transcribe.py` | P4 | `basic_pitch.inference.predict` |
-| `src/lodestone/chart.py` | P5 | ghost-note filter, string/fret assignment, chord grouping |
-| `src/lodestone/jobs.py` | **real** | multiprocessing — already real in this PR |
+| `src/apollo/ingest.py` | P1 + P2 | SHA-256 ID, validity check, ffmpeg decode |
+| `src/apollo/separate.py` | P3 | `demucs.api.Separator` |
+| `src/apollo/transcribe.py` | P4 | `basic_pitch.inference.predict` |
+| `src/apollo/chart.py` | P5 | ghost-note filter, string/fret assignment, chord grouping |
+| `src/apollo/jobs.py` | **real** | multiprocessing — already real in this PR |
 
 `jobs.py` is real code: it launches prep in a background process and
 updates `song.json` stages (`pending → running → done/failed`) via
@@ -105,23 +105,23 @@ all stages to `"done"` after `.join()`.
 
 | Module | Fakes | Real replacement |
 |--------|-------|-----------------|
-| `src/lodestone/audio_io.py` | L2 + T1 | sounddevice duplex stream |
-| `src/lodestone/pitch.py` | L3 + T2 | YIN algorithm |
-| `src/lodestone/onsets.py` | L4 | amplitude/pitch transition detector |
-| `src/lodestone/scoring.py` | L5 | note-matching within timing windows |
-| `src/lodestone/tuner.py` | T3 | cents deviation + string guess |
-| `src/lodestone/settings.py` | L1 | tap-test latency measurement |
-| `src/lodestone/ui.py` | L6 | full GUI (framework TBD); **no torch import** |
+| `src/apollo/audio_io.py` | L2 + T1 | sounddevice duplex stream |
+| `src/apollo/pitch.py` | L3 + T2 | YIN algorithm |
+| `src/apollo/onsets.py` | L4 | amplitude/pitch transition detector |
+| `src/apollo/scoring.py` | L5 | note-matching within timing windows |
+| `src/apollo/tuner.py` | T3 | cents deviation + string guess |
+| `src/apollo/settings.py` | L1 | tap-test latency measurement |
+| `src/apollo/ui.py` | L6 | full GUI (framework TBD); **no torch import** |
 
 ### Updated files
 
-- `src/lodestone/__init__.py` — add `demo()` command wiring all stubs.
-- `src/lodestone/__main__.py` — entry point for `python -m lodestone`.
+- `src/apollo/__init__.py` — add `demo()` command wiring all stubs.
+- `src/apollo/__main__.py` — entry point for `python -m apollo`.
 
 ### New tests
 
 - `tests/test_live.py` — stub unit tests for pitch, onsets, scoring, tuner.
-- `tests/test_ui_no_torch.py` — importing `lodestone.ui` must not load torch.
+- `tests/test_ui_no_torch.py` — importing `apollo.ui` must not load torch.
 - `tests/test_e2e.py` — full demo in a temp folder; assert all files exist
   and exit code is 0.
 
@@ -140,4 +140,4 @@ steps: checkout, install uv, `uv sync --locked`, `uv run pytest`.
 | 1 | `uv run pytest tests/test_formats.py tests/test_chart_guarantees.py tests/test_store.py` | all pass |
 | 2 | `uv run pytest tests/test_prep.py` | all pass |
 | 3 | `uv run pytest` | all pass |
-| 3 | `uv run python -m lodestone demo tests/fixtures/sample.wav` | prints song_id, progress, score, tuner; exits 0 |
+| 3 | `uv run python -m apollo demo tests/fixtures/sample.wav` | prints song_id, progress, score, tuner; exits 0 |

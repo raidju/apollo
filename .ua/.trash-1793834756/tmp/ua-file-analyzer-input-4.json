@@ -1,0 +1,41 @@
+{
+  "projectRoot": "C:/Users/Tiern/lodestone",
+  "batchFiles": [
+    {"path": ".gitattributes", "language": "unknown", "sizeLines": 3, "fileCategory": "code"},
+    {"path": ".python-version", "language": "unknown", "sizeLines": 1, "fileCategory": "code"},
+    {"path": "README.md", "language": "markdown", "sizeLines": 98, "fileCategory": "docs"},
+    {"path": "docs/ARCHITECTURE.md", "language": "markdown", "sizeLines": 247, "fileCategory": "docs"},
+    {"path": "docs/specs/pitch.md", "language": "markdown", "sizeLines": 66, "fileCategory": "docs"},
+    {"path": "docs/specs/walking-skeleton.md", "language": "markdown", "sizeLines": 143, "fileCategory": "docs"},
+    {"path": "pyproject.toml", "language": "toml", "sizeLines": 50, "fileCategory": "config"},
+    {"path": "tests/conftest.py", "language": "python", "sizeLines": 34, "fileCategory": "code"},
+    {"path": "tests/fixtures/chart/guitar.json", "language": "json", "sizeLines": 10, "fileCategory": "config"},
+    {"path": "tests/fixtures/notes/guitar.json", "language": "json", "sizeLines": 7, "fileCategory": "config"},
+    {"path": "tests/fixtures/sample.wav", "language": "wav", "sizeLines": 780, "fileCategory": "code"},
+    {"path": "tests/test_chart_guarantees.py", "language": "python", "sizeLines": 161, "fileCategory": "code"},
+    {"path": "tests/test_dev_gui.py", "language": "python", "sizeLines": 99, "fileCategory": "code"},
+    {"path": "tests/test_formats.py", "language": "python", "sizeLines": 89, "fileCategory": "code"},
+    {"path": "tests/test_pitch_tuner.py", "language": "python", "sizeLines": 89, "fileCategory": "code"},
+    {"path": "tests/test_prep.py", "language": "python", "sizeLines": 153, "fileCategory": "code"},
+    {"path": "tests/test_store.py", "language": "python", "sizeLines": 90, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    ".gitattributes": [],
+    ".python-version": [],
+    "README.md": [],
+    "docs/ARCHITECTURE.md": [],
+    "docs/specs/pitch.md": [],
+    "docs/specs/walking-skeleton.md": [],
+    "pyproject.toml": [],
+    "tests/conftest.py": [],
+    "tests/fixtures/chart/guitar.json": [],
+    "tests/fixtures/notes/guitar.json": [],
+    "tests/fixtures/sample.wav": [],
+    "tests/test_chart_guarantees.py": [],
+    "tests/test_dev_gui.py": [],
+    "tests/test_formats.py": [],
+    "tests/test_pitch_tuner.py": [],
+    "tests/test_prep.py": [],
+    "tests/test_store.py": []
+  }
+}

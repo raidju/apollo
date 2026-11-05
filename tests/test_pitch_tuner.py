@@ -3,8 +3,8 @@ import math
 import numpy as np
 import pytest
 
-from lodestone.pitch import PitchReading, detect
-from lodestone.tuner import STANDARD_TUNING, Tuner
+from apollo.pitch import PitchReading, detect
+from apollo.tuner import STANDARD_TUNING, Tuner
 
 SAMPLE_RATE = 44100
 FRAME_SIZE = 4096
