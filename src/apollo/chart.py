@@ -17,6 +17,9 @@ _MIN_DURATION_S = 0.08
 _MIN_AMPLITUDE = 0.30
 _ONSET_WINDOW_S = 0.04
 _OCTAVE_INTERVALS = (12, 19)
+# Overtones two and three octaves up. These are weaker than the ones above,
+# so a ghost here only needs to be quieter than its parent, not half as loud.
+_WIDE_OCTAVE_INTERVALS = (24, 36)
 
 # octave-shift thresholds
 _SHIFT_MIN_AMPLITUDE = 0.40
@@ -226,15 +229,23 @@ def _merge_same_pitch(events: list[dict]) -> list[dict]:
 
 
 def _is_ghost(note: dict, all_events: list[dict]) -> bool:
-    """Return True if note is a harmonic artifact above a louder concurrent note."""
+    """Return True if note is a harmonic artifact above a louder concurrent note.
+
+    Two kinds count as ghosts:
+    - one octave (or octave + fifth) up, when the lower note is at least twice as loud;
+    - two or three octaves up, when the lower note is louder at all.
+    """
     for other in all_events:
         if other is note:
             continue
         concurrent = note["start_s"] < other["end_s"] and other["start_s"] < note["end_s"]
-        if concurrent:
-            interval = note["midi"] - other["midi"]
-            if interval in _OCTAVE_INTERVALS and other["amplitude"] >= 2.0 * note["amplitude"]:
-                return True
+        if not concurrent:
+            continue
+        interval = note["midi"] - other["midi"]
+        if interval in _OCTAVE_INTERVALS and other["amplitude"] >= 2.0 * note["amplitude"]:
+            return True
+        if interval in _WIDE_OCTAVE_INTERVALS and other["amplitude"] > note["amplitude"]:
+            return True
     return False
 
 

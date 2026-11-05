@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Build: uv run pyinstaller apollo.spec
-# Output: dist/Apollo.exe  (single file, no console window)
+# Build: uv run pyinstaller apollo.spec --distpath launch
+# Output: launch/Apollo.exe  (single file, no console window)
 
 from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 
@@ -43,6 +43,10 @@ a = Analysis(
         "tensorflow",
         "tensorflow_macos",
         "coremltools",
+        # sklearn is a transitive dep of librosa but not used at runtime;
+        # its PyInstaller hook triggers an OOM during the build analysis phase.
+        "sklearn",
+        "scikit_learn",
         # Test and dev tools
         "pytest",
         "ruff",

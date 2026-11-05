@@ -42,18 +42,30 @@ uv sync --locked --extra ml
 
 > **This step is required** if you want to prep songs (separate stems, generate charts). Without it, clicking "Prep selected" will fail with a "No module named 'torch'" error.
 
+### Download the separation model (once, while online)
+
+The model that splits out the guitar (about 55 MB) isn't part of the install. Download it once on each machine:
+
+```bash
+uv run python -m apollo.separate --download
+```
+
+After that, song prep never goes online, so it works with no internet. If you skip this step, the "Split instruments" step fails and `prep.log` shows `Separation model not downloaded`, along with the command above.
+
 
 ## Running the app
 
 ### Option 1 — Double-click exe (Windows)
 
 Build it once:
-```bash
-uv sync
-uv run pyinstaller apollo.spec
+```powershell
+uv sync --locked
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
+Remove-Item -Recurse -Force build -ErrorAction SilentlyContinue
+uv run pyinstaller apollo.spec --distpath launch
 ```
 
-That produces `dist/Apollo.exe` (~138 MB, single file, no console window). Double-click it to launch. You can move or copy it anywhere — it is self-contained.
+That produces `launch/Apollo.exe` (~138 MB, single file, no console window). Double-click it to launch. You can move or copy it anywhere — it is self-contained.
 
 > **Prep still needs the ML extras.** The exe bundles everything except torch and Demucs (too large). If you click "Prep selected" and it fails, see the ML step below under [Install the ML dependencies](#install-the-ml-dependencies-required-for-prep).
 
@@ -72,8 +84,29 @@ Opens the preview window with three tabs: Tuner, Songs, and Chart.
 ### Quick walkthrough
 
 1. **Tuner tab** — Click Start, play a note, see the note name and how many cents sharp or flat you are.
-2. **Songs tab** — Click "Import song…" to load a WAV, MP3, or MP4 file. Select it in the list and click "Prep selected" to separate the stems and build the chart. The four stage indicators (Ingest / Separate / Transcribe / Chart) update as it runs. Prep takes a few minutes.
+2. **Songs tab** — Click "Import song…" to load a WAV, MP3, or MP4 file. Select it in the list and click "Prep selected" to separate the stems and build the chart. Prep takes a few minutes; see [While prep runs](#while-prep-runs) below.
 3. **Chart tab** — Once prep finishes, click "Open in Chart tab" on the Songs tab. Click "Play backing" to start the backing track and watch the play line move through the chart.
+
+### Demo song
+
+Our demo song is **"Blackbird" by The Beatles**. Use your own copy of the recording. Audio files are never committed, and the `songs/` folder is gitignored. Import it on the Songs tab and prep it like any other song.
+
+### While prep runs
+
+A progress bar appears at the top of the Songs tab with one block per step:
+
+| Step | What it does | How long |
+| --- | --- | --- |
+| Split instruments | Separates the guitar from the rest of the band | The longest step, usually a few minutes |
+| Find notes | Lists every note in the guitar track | Much quicker than splitting |
+| Build chart | Cleans up the notes and picks a string and fret for each | A few seconds |
+
+- The step that's running is blue, with a light stripe sliding across it so you can see the app is still working.
+- Finished steps turn green with a ✓. A failed step turns red with a ✗.
+- The line under the bar says which step is running (for example "Step 1 of 3") and how long prep has been going.
+- When prep ends, it shows the total time or which step failed.
+
+The bar shows which step is running, not a percentage. The prep steps don't report how far along they are, so the bar doesn't guess. You can keep using the Tuner tab while prep runs.
 
 
 ## Troubleshooting
@@ -97,9 +130,10 @@ uv sync --locked --extra ml
 
 ### Prep fails partway through
 
-Check the terminal window where you launched the app — the error from the failed step is printed there. The most common causes:
+The progress bar on the Songs tab turns the failed step red, and the list's stage columns show it too. For details, open `prep.log` inside that song's folder in the app's store directory — it records each step and any error. The most common causes:
 
-- **Separation fails** — `torch` or `demucs` not installed (see above).
+- **Separation fails** — `torch` or `demucs` not installed, or the separation model was never downloaded (see [Download the separation model](#download-the-separation-model-once-while-online)).
+- **Crashes with "OpenBLAS error: Memory allocation" or "access violation"** — the computer ran out of memory. Close other apps, especially browsers, and try again.
 - **Very short file** — files under about 10 seconds may not have enough audio for the model to work with.
 - **Corrupted file** — try a different copy of the song.
 
@@ -107,6 +141,14 @@ Check the terminal window where you launched the app — the error from the fail
 
 - **Windows** — make sure your microphone is not disabled in Settings → System → Sound → Input.
 - **macOS** — Terminal (or your IDE) needs microphone permission: System Settings → Privacy & Security → Microphone.
+
+### The chart has a stray very high note (fret 12 and up)
+
+Basic Pitch sometimes hears the ring of an open string two or three octaves up and reports it as a separate note. The chart step now removes these. A song prepped before that fix still has its old chart, so select it and click "Prep selected" again to rebuild it.
+
+### The chart uses a different string than the real song
+
+The chart picks the lowest fret that fits near your hand, so a note may land on a different string than the original recording uses. For example, in "Blackbird" some melody notes show on the high e string, while the real song plays them higher up the B string. The notes are the same pitch and still score correctly; only the fingering differs.
 
 ### The chart looks very short compared to the song length
 

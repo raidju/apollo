@@ -19,3 +19,4 @@ desktop.ini
 
 # Local song library (imported audio and prep output)
 songs/
+launch/*.exe

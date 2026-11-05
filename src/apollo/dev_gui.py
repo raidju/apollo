@@ -53,6 +53,10 @@ FRAME_SIZE = 4096    # samples fed to pitch.detect() each poll
 BLOCK_SIZE = 2048    # sounddevice callback blocksize
 POLL_MS = 50         # tuner timer interval ms
 PREP_POLL_MS = 500   # songs-tab prep polling interval ms
+PREP_ANIM_MS = 40    # songs-tab progress bar animation frame interval ms
+PREP_SHIMMER_STEP = 0.025  # fraction of a segment the moving stripe travels per frame
+PREP_BAR_HEIGHT = 28       # progress bar height in pixels
+PREP_SEGMENT_GAP = 4       # pixels between progress bar segments
 PLAY_POLL_MS = 30    # chart playback timer interval ms
 
 STRING_NAMES = ["low E", "A", "D", "G", "B", "high e"]
@@ -81,6 +85,26 @@ _STAGE_SYMBOLS = {
     "failed": "✗",
     "pending": "·",
 }
+
+# The three prep steps run by jobs, in order:
+# (stage key in song.json, short segment label, caption wording, hint for the user)
+PREP_STEPS = [
+    ("separate", "Split instruments", "Splitting instruments",
+     "Longest step, usually a few minutes."),
+    ("transcribe", "Find notes", "Finding the notes",
+     "Much quicker than splitting."),
+    ("chart", "Build chart", "Building the chart",
+     "Last step, takes a few seconds."),
+]
+
+_PREP_SEGMENT_COLORS = {
+    "pending": COLORS["surface2"],
+    "running": COLORS["stage_running"],
+    "done": COLORS["stage_done"],
+    "failed": COLORS["stage_failed"],
+}
+
+_PREP_SHIMMER_COLOR = "#90caf9"  # lighter blue stripe that slides over the running step
 
 _TAB_DESCRIPTIONS = {
     0: "Listen to a string and see which note it is",
@@ -157,6 +181,64 @@ def stage_row(song: dict, target: str) -> tuple[str, ...]:
         sym(s.get("transcribe", {}).get(target, "pending")),
         sym(s.get("chart", {}).get(target, "pending")),
     )
+
+
+def prep_step_states(song: dict, target: str) -> list[str]:
+    """Return the state of each step in PREP_STEPS, read from song.json stages."""
+    stages = song.get("stages", {})
+    states = []
+    for stage_key, _short, _caption, _hint in PREP_STEPS:
+        value = stages.get(stage_key, "pending")
+        if isinstance(value, dict):
+            value = value.get(target, "pending")
+        states.append(value)
+    return states
+
+
+def prep_display_states(states: list[str], finished: bool) -> list[str]:
+    """Return the states the progress bar should show.
+
+    While prep is running, song.json can still hold "done" or "failed"
+    left over from an earlier run. So until the run finishes, only steps
+    before the running one count as finished; later steps show as pending.
+    """
+    if finished:
+        return list(states)
+    if "running" not in states:
+        return ["pending"] * len(states)
+    running_index = states.index("running")
+    pending_after = ["pending"] * (len(states) - running_index - 1)
+    return states[:running_index] + ["running"] + pending_after
+
+
+def format_elapsed(seconds: float) -> str:
+    """Format seconds as m:ss, for example 83.4 -> '1:23'."""
+    whole_seconds = max(0, int(seconds))
+    minutes, secs = divmod(whole_seconds, 60)
+    return f"{minutes}:{secs:02d}"
+
+
+def prep_caption(display_states: list[str], elapsed_s: float, finished: bool) -> str:
+    """Return the sentence shown under the progress bar."""
+    elapsed = format_elapsed(elapsed_s)
+    total = len(PREP_STEPS)
+    numbered_steps = list(enumerate(zip(display_states, PREP_STEPS), start=1))
+
+    if finished:
+        for number, (state, (_key, _short, caption, _hint)) in numbered_steps:
+            if state == "failed":
+                return (
+                    f"Step {number} of {total} failed: {caption}."
+                    " See prep.log in the song's folder."
+                )
+        if all(state == "done" for state in display_states):
+            return f"Prep complete in {elapsed}."
+        return f"Prep stopped before finishing ({elapsed}). See prep.log in the song's folder."
+
+    for number, (state, (_key, _short, caption, hint)) in numbered_steps:
+        if state == "running":
+            return f"Step {number} of {total}: {caption}…   {elapsed} elapsed.   {hint}"
+    return f"Starting prep…   {elapsed} elapsed."
 
 
 # ---------------------------------------------------------------------------
@@ -384,6 +466,122 @@ class TunerTab:
 # ---------------------------------------------------------------------------
 
 
+class PrepProgress:
+    """A three-part progress bar for song prep, with a caption underneath.
+
+    Each part is one prep step. Finished steps are green with a check,
+    a failed step is red with a cross, and the running step is blue with a
+    light stripe sliding across it so the user can see the app is still working.
+    """
+
+    def __init__(self, parent: ttk.Frame, root: tk.Tk) -> None:
+        self._root = root
+        self._states = ["pending"] * len(PREP_STEPS)
+        self._shimmer_phase = 0.0
+        self._animating = False
+
+        self._frame = tk.Frame(parent, bg=COLORS["bg"])
+        self._frame.columnconfigure(0, weight=1)
+
+        self._title_label = tk.Label(
+            self._frame, text="",
+            font=(FONT_FAMILY, 10, "bold"),
+            bg=COLORS["bg"], fg=COLORS["fg"],
+            anchor="w",
+        )
+        self._title_label.grid(row=0, column=0, sticky="ew")
+
+        self._canvas = tk.Canvas(
+            self._frame, height=PREP_BAR_HEIGHT,
+            bg=COLORS["bg"], highlightthickness=0,
+        )
+        self._canvas.grid(row=1, column=0, sticky="ew", pady=4)
+        self._canvas.bind("<Configure>", lambda _event: self._draw())
+
+        self._caption_label = tk.Label(
+            self._frame, text="",
+            font=(FONT_FAMILY, 10),
+            bg=COLORS["bg"], fg=COLORS["fg_dim"],
+            anchor="w",
+        )
+        self._caption_label.grid(row=2, column=0, sticky="ew")
+
+    def place(self, row: int) -> None:
+        """Grid the progress area into its parent, then hide it until prep starts."""
+        self._frame.grid(row=row, column=0, columnspan=2, sticky="ew", padx=10, pady=(0, 6))
+        self._frame.grid_remove()
+
+    def start(self, song_title: str) -> None:
+        """Show the bar for a new prep run, with every step pending."""
+        self._title_label.config(text=f"Preparing: {song_title}")
+        self._frame.grid()
+        self.update(["pending"] * len(PREP_STEPS), 0.0, finished=False)
+
+    def update(self, states: list[str], elapsed_s: float, finished: bool) -> None:
+        """Redraw the bar and caption from the latest step states."""
+        self._states = prep_display_states(states, finished)
+        self._caption_label.config(text=prep_caption(self._states, elapsed_s, finished))
+        self._draw()
+        if finished:
+            self._animating = False
+        elif not self._animating:
+            self._animating = True
+            self._root.after(PREP_ANIM_MS, self._animate)
+
+    def _animate(self) -> None:
+        """Move the stripe on the running step one frame, then schedule the next frame."""
+        if not self._animating:
+            return
+        self._shimmer_phase = (self._shimmer_phase + PREP_SHIMMER_STEP) % 1.0
+        self._draw()
+        self._root.after(PREP_ANIM_MS, self._animate)
+
+    def _draw(self) -> None:
+        """Draw one segment per prep step across the full canvas width."""
+        self._canvas.delete("all")
+        width = self._canvas.winfo_width()
+        if width <= 1:
+            return
+        step_count = len(PREP_STEPS)
+        segment_width = (width - PREP_SEGMENT_GAP * (step_count - 1)) / step_count
+        for index, state in enumerate(self._states):
+            left = index * (segment_width + PREP_SEGMENT_GAP)
+            right = left + segment_width
+            self._draw_segment(left, right, state, PREP_STEPS[index][1])
+
+    def _draw_segment(self, left: float, right: float, state: str, label: str) -> None:
+        """Draw one step: coloured block, moving stripe if running, then its label."""
+        self._canvas.create_rectangle(
+            left, 0, right, PREP_BAR_HEIGHT,
+            fill=_PREP_SEGMENT_COLORS.get(state, COLORS["surface2"]), outline="",
+        )
+        if state == "running":
+            self._draw_shimmer(left, right)
+
+        symbol = _STAGE_SYMBOLS.get(state, "·")
+        text_color = COLORS["fg_dim"] if state == "pending" else COLORS["bg"]
+        self._canvas.create_text(
+            (left + right) / 2, PREP_BAR_HEIGHT / 2,
+            text=f"{symbol}  {label}",
+            fill=text_color, font=(FONT_FAMILY, 9, "bold"),
+        )
+
+    def _draw_shimmer(self, left: float, right: float) -> None:
+        """Draw the light stripe that slides left to right across the running step."""
+        segment_width = right - left
+        stripe_width = segment_width * 0.25
+        travel = segment_width + stripe_width
+        stripe_left = left - stripe_width + self._shimmer_phase * travel
+        stripe_right = stripe_left + stripe_width
+        clipped_left = max(left, stripe_left)
+        clipped_right = min(right, stripe_right)
+        if clipped_right > clipped_left:
+            self._canvas.create_rectangle(
+                clipped_left, 0, clipped_right, PREP_BAR_HEIGHT,
+                fill=_PREP_SHIMMER_COLOR, outline="",
+            )
+
+
 class SongsTab:
     def __init__(
         self,
@@ -402,16 +600,20 @@ class SongsTab:
         self._chart_frame = chart_frame
         self._set_status = set_status
         self._proc: object | None = None
+        self._prep_started_at = 0.0
         self._songs: list[dict] = []
         self._setup_widgets(parent)
         self._refresh()
 
     def _setup_widgets(self, parent: ttk.Frame) -> None:
         parent.columnconfigure(0, weight=1)
-        parent.rowconfigure(1, weight=1)
+        parent.rowconfigure(2, weight=1)
 
         btn_frame = ttk.Frame(parent)
         btn_frame.grid(row=0, column=0, columnspan=2, sticky="ew", padx=10, pady=8)
+
+        self._progress = PrepProgress(parent, self._root)
+        self._progress.place(row=1)
 
         self._import_btn = ttk.Button(
             btn_frame, text="Import song…", command=self._import
@@ -455,8 +657,8 @@ class SongsTab:
         vsb = ttk.Scrollbar(parent, orient="vertical", command=self._tree.yview)
         self._tree.configure(yscrollcommand=vsb.set)
 
-        self._tree.grid(row=1, column=0, sticky="nsew", padx=(10, 0), pady=4)
-        vsb.grid(row=1, column=1, sticky="ns", pady=4)
+        self._tree.grid(row=2, column=0, sticky="nsew", padx=(10, 0), pady=4)
+        vsb.grid(row=2, column=1, sticky="ns", pady=4)
 
         self._tree.bind("<<TreeviewSelect>>", self._on_select)
 
@@ -538,6 +740,9 @@ class SongsTab:
             return
         song_id = sel[0]
         self._proc = jobs.start_prep(song_id, "guitar", self._store.root)
+        self._prep_started_at = time.monotonic()
+        song = self._find_song(song_id) or {}
+        self._progress.start(song.get("title", song_id))
         self._prep_btn.config(state="disabled")
         self._chart_btn.config(state="disabled")
         self._set_status("Prep started…")  # type: ignore[operator]
@@ -572,6 +777,7 @@ class SongsTab:
             pass
 
         exitcode = getattr(self._proc, "exitcode", None)
+        self._update_progress(song_id, finished=exitcode is not None)
         if exitcode is None:
             self._root.after(PREP_POLL_MS, lambda: self._poll_prep(song_id))
             return
@@ -589,6 +795,16 @@ class SongsTab:
         if self._tree.selection():
             self._prep_btn.config(state="normal")
         self._on_select(None)
+
+    def _update_progress(self, song_id: str, finished: bool) -> None:
+        """Read the song's stages and push them to the progress bar."""
+        try:
+            song = self._store.read_song(song_id)
+        except Exception:  # noqa: BLE001
+            return
+        elapsed_s = time.monotonic() - self._prep_started_at
+        states = prep_step_states(song, "guitar")
+        self._progress.update(states, elapsed_s, finished)
 
     def _open_in_chart(self) -> None:
         sel = self._tree.selection()
