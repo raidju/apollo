@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import torch
 import soundfile as sf
 
-from lodestone.store import SongStore
+from apollo.store import SongStore
 
 
 def separate(song_id: str, target: str, store: SongStore) -> None:
@@ -14,6 +13,7 @@ def separate(song_id: str, target: str, store: SongStore) -> None:
     to stems/. The backing track is every stem except <target> summed and
     clamped, written to backing/<target>.wav.
     """
+    import torch
     from demucs.api import Separator
 
     sep = Separator("htdemucs_6s", device="cpu")

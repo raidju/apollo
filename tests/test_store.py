@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from lodestone.store import SchemaError, SongStore
+from apollo.store import SchemaError, SongStore
 
 
 SONG_ID = "abc123test"

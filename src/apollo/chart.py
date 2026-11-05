@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from lodestone.store import SongStore
+from apollo.store import SongStore
 
 _TUNING = [40, 45, 50, 55, 59, 64]  # string 0 (low E) to string 5 (high e)
 _CAPO = 0

@@ -5,7 +5,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Optional
 
-from lodestone.pitch import PitchReading
+from apollo.pitch import PitchReading
 
 
 STANDARD_TUNING = [40, 45, 50, 55, 59, 64]  # E2 A2 D3 G3 B3 E4

@@ -1,8 +1,8 @@
 # Pitch Detection Handoff: PitchReading
 
-**Module**: `lodestone.pitch`  
+**Module**: `apollo.pitch`  
 **Algorithm**: YIN (de Cheveigné & Kawahara, 2002)  
-**Consumers**: `lodestone.onsets` (L4), `lodestone.tuner` (T2–T3)
+**Consumers**: `apollo.onsets` (L4), `apollo.tuner` (T2–T3)
 
 ---
 
@@ -58,7 +58,7 @@ First reading is available after one full frame accumulates: 4096 / 44100 ≈ 93
 
 ```python
 import numpy as np
-from lodestone.pitch import detect
+from apollo.pitch import detect
 
 frame = np.sin(2 * np.pi * 82.41 * np.arange(4096) / 44100).astype(np.float32)
 reading = detect(frame)

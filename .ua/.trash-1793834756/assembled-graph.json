@@ -1,0 +1,2073 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "lodestone",
+    "languages": [
+      "python",
+      "markdown",
+      "toml",
+      "json"
+    ],
+    "frameworks": [
+      "librosa",
+      "numpy",
+      "pytest",
+      "sounddevice",
+      "basic-pitch",
+      "demucs"
+    ],
+    "description": "Instrument practice app: tuner, auto charts, and scored play-along",
+    "analyzedAt": "2026-11-04T22:46:21Z",
+    "gitCommitHash": "5dcdfb09719f9cd7c0b298324fc57bbe36eda255"
+  },
+  "nodes": [
+    {
+      "id": "file:src/lodestone/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "src/lodestone/__init__.py",
+      "summary": "Package entry point for the lodestone module; currently contains a placeholder main() function that prints the package name.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lodestone/dev_gui.py",
+      "type": "file",
+      "name": "dev_gui.py",
+      "filePath": "src/lodestone/dev_gui.py",
+      "summary": "Main Tkinter desktop GUI for lodestone, providing TunerTab, SongsTab, and ChartTab panels inside a tabbed App window, along with helper drawing and data functions.",
+      "tags": [
+        "entry-point",
+        "component",
+        "event-handler",
+        "ui"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses tkinter/ttk for a cross-platform dark-themed GUI; audio I/O via sounddevice with a background-thread poll loop."
+    },
+    {
+      "id": "file:src/lodestone/jobs.py",
+      "type": "file",
+      "name": "jobs.py",
+      "filePath": "src/lodestone/jobs.py",
+      "summary": "Launches and manages the song preparation pipeline (separate, transcribe, chart) in a background multiprocessing.Process, writing stage progress back to song.json via SongStore.",
+      "tags": [
+        "service",
+        "data-pipeline",
+        "background-job"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/pitch.py",
+      "type": "file",
+      "name": "pitch.py",
+      "filePath": "src/lodestone/pitch.py",
+      "summary": "Implements the YIN algorithm for monophonic pitch detection from a NumPy audio frame, returning a PitchReading dataclass with frequency, MIDI note, confidence, and RMS.",
+      "tags": [
+        "utility",
+        "audio",
+        "algorithm"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Pure-NumPy YIN implementation with parabolic interpolation for sub-sample accuracy; no external pitch library dependency."
+    },
+    {
+      "id": "file:src/lodestone/tuner.py",
+      "type": "file",
+      "name": "tuner.py",
+      "filePath": "src/lodestone/tuner.py",
+      "summary": "Provides the Tuner class that smooths a rolling history of PitchReadings and produces a TunerDisplay with note name, cents offset, nearest guitar string, and in-tune flag.",
+      "tags": [
+        "service",
+        "audio",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:TunerTab",
+      "type": "class",
+      "name": "TunerTab",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        167,
+        379
+      ],
+      "summary": "Tkinter tab widget for the real-time chromatic tuner; manages the audio input stream, polls pitch detections, and updates a needle-and-chip display.",
+      "tags": [
+        "component",
+        "event-handler",
+        "audio"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:SongsTab",
+      "type": "class",
+      "name": "SongsTab",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        387,
+        606
+      ],
+      "summary": "Tkinter tab widget that lists all songs in the store, allows importing WAV files, triggering the prep pipeline, and opening the resulting chart in ChartTab.",
+      "tags": [
+        "component",
+        "event-handler",
+        "data-model"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:ChartTab",
+      "type": "class",
+      "name": "ChartTab",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        614,
+        907
+      ],
+      "summary": "Tkinter tab widget that renders a guitar tablature chart on a scrollable canvas, plays back the backing audio, and highlights active notes in sync.",
+      "tags": [
+        "component",
+        "event-handler",
+        "audio"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:App",
+      "type": "class",
+      "name": "App",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        915,
+        1069
+      ],
+      "summary": "Root application class that constructs the main Tk window, applies the dark theme, assembles the three tabs, and wires the status bar and close handler.",
+      "tags": [
+        "entry-point",
+        "component",
+        "singleton"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lodestone/dev_gui.py:list_songs",
+      "type": "function",
+      "name": "list_songs",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        131,
+        143
+      ],
+      "summary": "Iterates the store root directory and reads each song's metadata, returning a list of song dicts for display in the songs table.",
+      "tags": [
+        "utility",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/dev_gui.py:active_note_ids",
+      "type": "function",
+      "name": "active_note_ids",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        122,
+        128
+      ],
+      "summary": "Returns the set of canvas item IDs for notes that are sounding at time t, used to highlight notes during playback.",
+      "tags": [
+        "utility",
+        "audio"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/dev_gui.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [
+        1077,
+        1080
+      ],
+      "summary": "Entry point that creates the Tk root window, instantiates the App, and starts the main event loop.",
+      "tags": [
+        "entry-point",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/jobs.py:start_prep",
+      "type": "function",
+      "name": "start_prep",
+      "filePath": "src/lodestone/jobs.py",
+      "lineRange": [
+        15,
+        33
+      ],
+      "summary": "Spawns a non-daemon background process to run the full prep pipeline (separate, transcribe, chart) for a given song and returns the Process handle.",
+      "tags": [
+        "background-job",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/jobs.py:_run_prep",
+      "type": "function",
+      "name": "_run_prep",
+      "filePath": "src/lodestone/jobs.py",
+      "lineRange": [
+        36,
+        66
+      ],
+      "summary": "Executes the sequential separate → transcribe → chart pipeline inside the child process, updating song.json stage flags before and after each step.",
+      "tags": [
+        "background-job",
+        "data-pipeline"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/jobs.py:_set_stage",
+      "type": "function",
+      "name": "_set_stage",
+      "filePath": "src/lodestone/jobs.py",
+      "lineRange": [
+        69,
+        83
+      ],
+      "summary": "Atomically reads and updates a single stage value in song.json via SongStore, supporting both top-level and target-keyed stage entries.",
+      "tags": [
+        "utility",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "class",
+      "name": "PitchReading",
+      "filePath": "src/lodestone/pitch.py",
+      "lineRange": [
+        11,
+        15
+      ],
+      "summary": "Dataclass holding the result of a single pitch detection: frequency in Hz, MIDI note value, YIN confidence score, and RMS energy.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "audio"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/pitch.py:detect",
+      "type": "function",
+      "name": "detect",
+      "filePath": "src/lodestone/pitch.py",
+      "lineRange": [
+        22,
+        93
+      ],
+      "summary": "Runs the YIN pitch detection algorithm on a mono float32 audio frame, returning a PitchReading with frequency, MIDI, confidence, and RMS.",
+      "tags": [
+        "algorithm",
+        "audio",
+        "utility"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/tuner.py:TunerDisplay",
+      "type": "class",
+      "name": "TunerDisplay",
+      "filePath": "src/lodestone/tuner.py",
+      "lineRange": [
+        17,
+        21
+      ],
+      "summary": "Dataclass carrying the display state for the tuner UI: note name string, cents offset, nearest guitar string index, and in-tune boolean.",
+      "tags": [
+        "data-model",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lodestone/tuner.py:Tuner",
+      "type": "class",
+      "name": "Tuner",
+      "filePath": "src/lodestone/tuner.py",
+      "lineRange": [
+        35,
+        61
+      ],
+      "summary": "Stateful tuner that maintains a rolling median history of MIDI readings from PitchReading values and produces a TunerDisplay on each update.",
+      "tags": [
+        "service",
+        "audio",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/chart.py",
+      "type": "file",
+      "name": "chart.py",
+      "filePath": "src/lodestone/chart.py",
+      "summary": "Builds guitar charts from raw Basic Pitch note events, applying noise cleaning, octave-shift correction, ghost-note removal, and string/fret assignment, then persisting the result via SongStore.",
+      "tags": [
+        "data-model",
+        "utility",
+        "service"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses Python 3.10+ union-type hints (tuple[int, int] | None) and defaultdict for per-MIDI grouping passes."
+    },
+    {
+      "id": "function:src/lodestone/chart.py:build_chart",
+      "type": "function",
+      "name": "build_chart",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        25,
+        85
+      ],
+      "summary": "Orchestrates the full chart-building pipeline: reads raw notes from the store, runs all cleaning/shift passes, assigns string and fret positions, then writes the final chart JSON.",
+      "tags": [
+        "service",
+        "entry-point",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:clean_notes",
+      "type": "function",
+      "name": "clean_notes",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        88,
+        97
+      ],
+      "summary": "Removes junk from a raw Basic Pitch note list by running four sequential filter passes: out-of-range, too-short/too-quiet, octave doubles, and same-pitch merging.",
+      "tags": [
+        "utility",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_apply_shifts",
+      "type": "function",
+      "name": "_apply_shifts",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        100,
+        120
+      ],
+      "summary": "Applies octave-up shifts to notes below the minimum playable MIDI pitch when low_note_mode is 'shift', stamping shift metadata onto each event.",
+      "tags": [
+        "utility",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_merge_shifted_duplicates",
+      "type": "function",
+      "name": "_merge_shifted_duplicates",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        123,
+        156
+      ],
+      "summary": "Merges same-pitch notes that overlap after octave shifting, using earliest start, latest end, and loudest amplitude, preserving shift metadata for the merged note.",
+      "tags": [
+        "utility",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_drop_octave_doubles",
+      "type": "function",
+      "name": "_drop_octave_doubles",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        180,
+        198
+      ],
+      "summary": "Drops the quieter of two notes when they start within the onset window and are an octave or octave+fifth apart, eliminating harmonic doubling artifacts.",
+      "tags": [
+        "utility",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_merge_same_pitch",
+      "type": "function",
+      "name": "_merge_same_pitch",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        201,
+        225
+      ],
+      "summary": "Merges contiguous or overlapping notes at the same MIDI pitch into a single note spanning their combined duration at the loudest amplitude.",
+      "tags": [
+        "utility",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/chart.py:_assign_string_fret",
+      "type": "function",
+      "name": "_assign_string_fret",
+      "filePath": "src/lodestone/chart.py",
+      "lineRange": [
+        241,
+        266
+      ],
+      "summary": "Returns the optimal (string, fret) tuple for a MIDI note, preferring positions within 4 frets of the previous placement to minimize hand movement, falling back to globally lowest fret.",
+      "tags": [
+        "utility",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/ingest.py",
+      "type": "file",
+      "name": "ingest.py",
+      "filePath": "src/lodestone/ingest.py",
+      "summary": "Imports a song file into the project by computing a SHA-256-based song ID, copying the audio file, and writing an initial song.json with all prep stages set to pending.",
+      "tags": [
+        "service",
+        "entry-point",
+        "utility"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Currently a stub that copies files as-is; real implementation would decode any format to 44.1 kHz stereo WAV via imageio-ffmpeg."
+    },
+    {
+      "id": "function:src/lodestone/ingest.py:ingest",
+      "type": "function",
+      "name": "ingest",
+      "filePath": "src/lodestone/ingest.py",
+      "lineRange": [
+        14,
+        53
+      ],
+      "summary": "Imports a song file, derives its song_id from the SHA-256 hash prefix, copies the audio to the song directory, and writes an initial song.json skeleton.",
+      "tags": [
+        "service",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lodestone/separate.py",
+      "type": "file",
+      "name": "separate.py",
+      "filePath": "src/lodestone/separate.py",
+      "summary": "Runs the Demucs htdemucs_6s model on a song's mix.wav to produce six per-stem WAV files and a backing track that sums all stems except the target instrument.",
+      "tags": [
+        "service",
+        "utility"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Imports torch and demucs lazily (inside the function) to keep them out of the UI process, honoring the architecture rule that the UI never imports heavy ML libraries."
+    },
+    {
+      "id": "function:src/lodestone/separate.py:separate",
+      "type": "function",
+      "name": "separate",
+      "filePath": "src/lodestone/separate.py",
+      "lineRange": [
+        9,
+        32
+      ],
+      "summary": "Splits mix.wav into per-stem WAVs using Demucs htdemucs_6s, then sums and clamps all non-target stems to produce the backing/<target>.wav file.",
+      "tags": [
+        "service",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lodestone/store.py",
+      "type": "file",
+      "name": "store.py",
+      "filePath": "src/lodestone/store.py",
+      "summary": "Central file-access layer for the lodestone song folder layout, providing atomic JSON read/write, path helpers, and schema version validation through the SongStore class.",
+      "tags": [
+        "service",
+        "data-model",
+        "utility"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses atomic write-then-rename (os.replace) so a crash never leaves a corrupt JSON file; schema version is enforced on every read."
+    },
+    {
+      "id": "class:src/lodestone/store.py:SongStore",
+      "type": "class",
+      "name": "SongStore",
+      "filePath": "src/lodestone/store.py",
+      "lineRange": [
+        23,
+        110
+      ],
+      "summary": "Provides all read/write operations for the songs directory tree, including path resolution helpers and atomic JSON persistence with schema version checking.",
+      "tags": [
+        "service",
+        "data-model",
+        "singleton"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/transcribe.py",
+      "type": "file",
+      "name": "transcribe.py",
+      "filePath": "src/lodestone/transcribe.py",
+      "summary": "Runs Basic Pitch polyphonic pitch detection on a stem WAV file and writes the resulting note events (start_s, end_s, midi, amplitude) as notes/<target>.json via SongStore.",
+      "tags": [
+        "service",
+        "utility"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Imports basic_pitch lazily inside the function to keep the heavy ML dependency out of the UI process, and explicitly casts all numpy types to plain Python types before JSON serialisation."
+    },
+    {
+      "id": "function:src/lodestone/transcribe.py:transcribe",
+      "type": "function",
+      "name": "transcribe",
+      "filePath": "src/lodestone/transcribe.py",
+      "lineRange": [
+        4,
+        31
+      ],
+      "summary": "Runs Basic Pitch on the stem WAV for a target instrument and writes normalised note events (plain Python types, sorted by start_s) to notes/<target>.json.",
+      "tags": [
+        "service",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/played_event.json",
+      "type": "config",
+      "name": "played_event.json",
+      "filePath": "tests/fixtures/played_event.json",
+      "summary": "Test fixture representing a single detected note event with song time in seconds, MIDI pitch integer, and pitch detection confidence score.",
+      "tags": [
+        "test",
+        "fixture",
+        "data-model",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/session_score.json",
+      "type": "config",
+      "name": "session_score.json",
+      "filePath": "tests/fixtures/session_score.json",
+      "summary": "Test fixture representing a scored play-along session result, including aggregate hit/perfect percentages, timing error stats, extra note count, and a per-note grade breakdown.",
+      "tags": [
+        "test",
+        "fixture",
+        "data-model",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/song.json",
+      "type": "config",
+      "name": "song.json",
+      "filePath": "tests/fixtures/song.json",
+      "summary": "Test fixture representing a song metadata record with schema_version, song_id, title, duration, and pipeline stage completion statuses for ingest, separation, transcription, and chart generation.",
+      "tags": [
+        "test",
+        "fixture",
+        "data-model",
+        "configuration"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Includes schema_version per project convention; pipeline stages mirror the ingest-separate-transcribe-chart handoff model described in ARCHITECTURE.md."
+    },
+    {
+      "id": "file:.gitattributes",
+      "type": "file",
+      "name": ".gitattributes",
+      "filePath": ".gitattributes",
+      "summary": "Git line-ending configuration enforcing LF for all files and CRLF only for batch scripts, ensuring cross-platform consistency.",
+      "tags": [
+        "configuration",
+        "build-system",
+        "cross-platform"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.python-version",
+      "type": "file",
+      "name": ".python-version",
+      "filePath": ".python-version",
+      "summary": "Pins the project's Python interpreter to version 3.12 for use by uv and pyenv-compatible tools.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview covering what the app does, how to install and run it, the full feature list with priorities, library dependencies, and cross-platform constraints.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/ARCHITECTURE.md",
+      "type": "document",
+      "name": "ARCHITECTURE.md",
+      "filePath": "docs/ARCHITECTURE.md",
+      "summary": "Authoritative architecture document defining the full module graph, all inter-module handoff data shapes, unit conventions (time in float seconds, pitch in MIDI), and the five chart guarantees enforced by tests.",
+      "tags": [
+        "documentation",
+        "architecture",
+        "schema-definition"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/specs/pitch.md",
+      "type": "document",
+      "name": "pitch.md",
+      "filePath": "docs/specs/pitch.md",
+      "summary": "Spec for the YIN-based pitch detection module, defining the PitchReading dataclass interface, detect() signature, default parameters, and frame size guidance for reliable low-E detection.",
+      "tags": [
+        "documentation",
+        "api-schema",
+        "schema-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/specs/walking-skeleton.md",
+      "type": "document",
+      "name": "walking-skeleton.md",
+      "filePath": "docs/specs/walking-skeleton.md",
+      "summary": "Implementation plan for the walking skeleton across three PRs: package layout and store in PR 1, prep pipeline stubs and jobs in PR 2, and live pipeline stubs with the demo command and CI in PR 3.",
+      "tags": [
+        "documentation",
+        "development",
+        "architecture"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:pyproject.toml",
+      "type": "config",
+      "name": "pyproject.toml",
+      "filePath": "pyproject.toml",
+      "summary": "Project build configuration declaring Python 3.12 requirement, core runtime dependencies, an optional ml extra (basic-pitch, demucs, onnxruntime) isolated to avoid Windows wheel failures, and dev tooling (pytest, ruff).",
+      "tags": [
+        "configuration",
+        "build-system",
+        "dependency-management"
+      ],
+      "complexity": "simple",
+      "languageNotes": "ML dependencies are split into an optional extra so the base install succeeds on Windows AMD64 where torch/triton have no wheel."
+    },
+    {
+      "id": "file:tests/conftest.py",
+      "type": "file",
+      "name": "conftest.py",
+      "filePath": "tests/conftest.py",
+      "summary": "Pytest session setup that generates tests/fixtures/sample.wav (a 3-second 440 Hz sine wave) on the first run using only the standard library, so tests have a deterministic audio fixture without committing a binary.",
+      "tags": [
+        "test",
+        "fixture",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/conftest.py:_make_sample_wav",
+      "type": "function",
+      "name": "_make_sample_wav",
+      "filePath": "tests/conftest.py",
+      "lineRange": [
+        14,
+        33
+      ],
+      "summary": "Creates tests/fixtures/sample.wav as a 3-second mono 440 Hz (A4) 16-bit PCM sine wave using only the standard library wave and struct modules.",
+      "tags": [
+        "fixture",
+        "test",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/chart/guitar.json",
+      "type": "config",
+      "name": "guitar.json",
+      "filePath": "tests/fixtures/chart/guitar.json",
+      "summary": "Fixture chart file for a guitar with two notes demonstrating the chart handoff format: schema_version, standard tuning, capo 0, and notes with id, timing, MIDI, string, fret, and chord fields.",
+      "tags": [
+        "configuration",
+        "fixture",
+        "schema-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/notes/guitar.json",
+      "type": "config",
+      "name": "guitar.json",
+      "filePath": "tests/fixtures/notes/guitar.json",
+      "summary": "Fixture raw-notes file for guitar demonstrating the transcribe-to-chart handoff format: schema_version, target instrument, and a list of events with start/end times, MIDI, and amplitude.",
+      "tags": [
+        "configuration",
+        "fixture",
+        "schema-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/fixtures/sample.wav",
+      "type": "file",
+      "name": "sample.wav",
+      "filePath": "tests/fixtures/sample.wav",
+      "summary": "Generated audio fixture (3-second 440 Hz sine wave) used by prep pipeline and ingest tests to exercise the full song processing path without requiring a real audio file.",
+      "tags": [
+        "fixture",
+        "test",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_chart_guarantees.py",
+      "type": "file",
+      "name": "test_chart_guarantees.py",
+      "filePath": "tests/test_chart_guarantees.py",
+      "summary": "Verifies all five chart guarantees from ARCHITECTURE.md against the fixture and unit-tests each clean_notes step (drop out-of-range, drop short/quiet, drop octave doubles, merge same pitch, shift to playable, merge shifted duplicates).",
+      "tags": [
+        "test",
+        "validation",
+        "chart"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_guarantee_1_sorted_by_start",
+      "type": "function",
+      "name": "test_guarantee_1_sorted_by_start",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        27,
+        32
+      ],
+      "summary": "Asserts that all notes in the chart fixture are sorted by start_s in non-decreasing order.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_guarantee_2_end_after_start",
+      "type": "function",
+      "name": "test_guarantee_2_end_after_start",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        34,
+        40
+      ],
+      "summary": "Asserts that every note in the chart fixture has end_s strictly greater than start_s.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_guarantee_3_string_fret_midi",
+      "type": "function",
+      "name": "test_guarantee_3_string_fret_midi",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        43,
+        53
+      ],
+      "summary": "Asserts that tuning[string] + capo + fret equals midi for every note, verifying the guitar string/fret arithmetic.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_guarantee_4_no_string_overlap",
+      "type": "function",
+      "name": "test_guarantee_4_no_string_overlap",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        56,
+        69
+      ],
+      "summary": "Asserts that no two notes on the same guitar string overlap in time.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_guarantee_5_playable_fret",
+      "type": "function",
+      "name": "test_guarantee_5_playable_fret",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        72,
+        77
+      ],
+      "summary": "Asserts that every note's fret value is within the playable range [0, 24].",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_clean_drop_out_of_range",
+      "type": "function",
+      "name": "test_clean_drop_out_of_range",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        87,
+        94
+      ],
+      "summary": "Unit test for _drop_out_of_range: verifies MIDI notes below 33 or above 88 are removed.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_clean_drop_short_or_quiet",
+      "type": "function",
+      "name": "test_clean_drop_short_or_quiet",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        97,
+        107
+      ],
+      "summary": "Unit test for _drop_short_or_quiet: verifies notes below the duration or amplitude threshold are removed.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_clean_drop_octave_doubles",
+      "type": "function",
+      "name": "test_clean_drop_octave_doubles",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        109,
+        117
+      ],
+      "summary": "Unit test for _drop_octave_doubles: verifies that quieter notes an octave above a louder simultaneous note are dropped.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_clean_merge_same_pitch",
+      "type": "function",
+      "name": "test_clean_merge_same_pitch",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        120,
+        132
+      ],
+      "summary": "Unit test for _merge_same_pitch: verifies that two overlapping notes of the same pitch are merged into one with the louder amplitude.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_shift_to_playable",
+      "type": "function",
+      "name": "test_shift_to_playable",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        135,
+        142
+      ],
+      "summary": "Unit test for _shift_to_playable: verifies that sub-floor MIDI notes are shifted up one octave while already-playable notes remain unchanged.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_chart_guarantees.py:test_merge_shifted_duplicates",
+      "type": "function",
+      "name": "test_merge_shifted_duplicates",
+      "filePath": "tests/test_chart_guarantees.py",
+      "lineRange": [
+        145,
+        161
+      ],
+      "summary": "Unit test for _merge_shifted_duplicates: verifies that a native note and a shifted duplicate at the same MIDI pitch are merged into one.",
+      "tags": [
+        "test",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_dev_gui.py",
+      "type": "file",
+      "name": "test_dev_gui.py",
+      "filePath": "tests/test_dev_gui.py",
+      "summary": "Tests for the dev_gui pure helper functions — verifies pixel coordinate calculations, song listing, stage row formatting, and that importing dev_gui never loads torch/demucs/basic_pitch.",
+      "tags": [
+        "test",
+        "ui",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/test_dev_gui.py:test_no_heavy_imports",
+      "type": "function",
+      "name": "test_no_heavy_imports",
+      "filePath": "tests/test_dev_gui.py",
+      "lineRange": [
+        26,
+        40
+      ],
+      "summary": "Runs a subprocess to verify that importing lodestone.dev_gui does not load torch, demucs, or basic_pitch into sys.modules.",
+      "tags": [
+        "test",
+        "validation",
+        "architecture"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/test_dev_gui.py:test_list_songs",
+      "type": "function",
+      "name": "test_list_songs",
+      "filePath": "tests/test_dev_gui.py",
+      "lineRange": [
+        67,
+        73
+      ],
+      "summary": "Integration test: ingests a sample WAV, calls list_songs, and asserts exactly one song appears with the correct song_id.",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_formats.py",
+      "type": "file",
+      "name": "test_formats.py",
+      "filePath": "tests/test_formats.py",
+      "summary": "Validates that every fixture JSON file (song.json, notes/guitar.json, chart/guitar.json, played_event.json, session_score.json) conforms to the handoff shapes defined in ARCHITECTURE.md.",
+      "tags": [
+        "test",
+        "validation",
+        "schema-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_pitch_tuner.py",
+      "type": "file",
+      "name": "test_pitch_tuner.py",
+      "filePath": "tests/test_pitch_tuner.py",
+      "summary": "Tests the YIN pitch detector (detect()) and the Tuner display logic against synthesized sine waves for all six open guitar strings, verifying accuracy within 3 cents and correct silence/noise handling.",
+      "tags": [
+        "test",
+        "pitch-detection",
+        "audio"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/test_pitch_tuner.py:test_open_strings",
+      "type": "function",
+      "name": "test_open_strings",
+      "filePath": "tests/test_pitch_tuner.py",
+      "lineRange": [
+        24,
+        42
+      ],
+      "summary": "Parametrized test verifying that detect() returns a frequency within 3 cents of each open guitar string (E2 through E4) using synthetic sine frames.",
+      "tags": [
+        "test",
+        "validation",
+        "parametrized"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_prep.py",
+      "type": "file",
+      "name": "test_prep.py",
+      "filePath": "tests/test_prep.py",
+      "summary": "Integration tests for the full prep pipeline: ingest, separate, transcribe, build_chart, and the jobs background process, verifying each step writes correct files and all stages reach 'done' after joining the process.",
+      "tags": [
+        "test",
+        "integration",
+        "pipeline"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/test_prep.py:test_ingest",
+      "type": "function",
+      "name": "test_ingest",
+      "filePath": "tests/test_prep.py",
+      "lineRange": [
+        39,
+        57
+      ],
+      "summary": "Verifies that ingest() produces a valid 16-hex-char song_id, writes mix.wav, and sets correct initial stage values in song.json.",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_prep.py:test_separate",
+      "type": "function",
+      "name": "test_separate",
+      "filePath": "tests/test_prep.py",
+      "lineRange": [
+        59,
+        66
+      ],
+      "summary": "Verifies that separate() writes the guitar stem and backing track WAV files to the correct store paths.",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_prep.py:test_transcribe",
+      "type": "function",
+      "name": "test_transcribe",
+      "filePath": "tests/test_prep.py",
+      "lineRange": [
+        69,
+        90
+      ],
+      "summary": "Verifies that transcribe() writes a valid notes JSON file with schema_version 1, sorted events, and valid MIDI/amplitude ranges.",
+      "tags": [
+        "test",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_prep.py:test_chart_stub",
+      "type": "function",
+      "name": "test_chart_stub",
+      "filePath": "tests/test_prep.py",
+      "lineRange": [
+        93,
+        138
+      ],
+      "summary": "Full integration test for build_chart(), asserting all five chart guarantees hold on the output written by the stub implementation.",
+      "tags": [
+        "test",
+        "integration",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/test_prep.py:test_jobs_stages",
+      "type": "function",
+      "name": "test_jobs_stages",
+      "filePath": "tests/test_prep.py",
+      "lineRange": [
+        141,
+        153
+      ],
+      "summary": "Launches the jobs background process via start_prep() and verifies all prep stages transition to 'done' after the process joins.",
+      "tags": [
+        "test",
+        "integration",
+        "concurrency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_store.py",
+      "type": "file",
+      "name": "test_store.py",
+      "filePath": "tests/test_store.py",
+      "summary": "Unit tests for SongStore covering round-trips for song, notes, and chart JSON; atomic write behavior (no .tmp files left); SchemaError on wrong or missing schema_version; and expected path structure.",
+      "tags": [
+        "test",
+        "unit-test",
+        "storage"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/jobs.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/pitch.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/tuner.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "file:src/lodestone/pitch.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:TunerTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:SongsTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:ChartTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:list_songs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:active_note_ids",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:TunerTab",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:SongsTab",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:ChartTab",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:App",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:start_prep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:_run_prep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:_set_stage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:start_prep",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "function:src/lodestone/pitch.py:detect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "function:src/lodestone/pitch.py:detect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:TunerDisplay",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:Tuner",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:TunerDisplay",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:Tuner",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:SongsTab",
+      "target": "function:src/lodestone/jobs.py:start_prep",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:SongsTab",
+      "target": "file:src/lodestone/ingest.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:TunerTab",
+      "target": "class:src/lodestone/tuner.py:Tuner",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:TunerTab",
+      "target": "function:src/lodestone/pitch.py:detect",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:App",
+      "target": "file:src/lodestone/store.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/jobs.py:_run_prep",
+      "target": "function:src/lodestone/jobs.py:_set_stage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/jobs.py:_set_stage",
+      "target": "file:src/lodestone/store.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/tuner.py:Tuner",
+      "target": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/ingest.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/separate.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/transcribe.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:build_chart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:clean_notes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_apply_shifts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_merge_shifted_duplicates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_drop_octave_doubles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_merge_same_pitch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:_assign_string_fret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:build_chart",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/chart.py",
+      "target": "function:src/lodestone/chart.py:clean_notes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/ingest.py",
+      "target": "function:src/lodestone/ingest.py:ingest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/ingest.py",
+      "target": "function:src/lodestone/ingest.py:ingest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/separate.py",
+      "target": "function:src/lodestone/separate.py:separate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/separate.py",
+      "target": "function:src/lodestone/separate.py:separate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/store.py",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/store.py",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/transcribe.py",
+      "target": "function:src/lodestone/transcribe.py:transcribe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lodestone/transcribe.py",
+      "target": "function:src/lodestone/transcribe.py:transcribe",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/chart.py:build_chart",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/ingest.py:ingest",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/separate.py:separate",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/transcribe.py:transcribe",
+      "target": "class:src/lodestone/store.py:SongStore",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "function:tests/conftest.py:_make_sample_wav",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_guarantee_1_sorted_by_start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_guarantee_2_end_after_start",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_guarantee_3_string_fret_midi",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_guarantee_4_no_string_overlap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_guarantee_5_playable_fret",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_clean_drop_out_of_range",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_clean_drop_short_or_quiet",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_clean_drop_octave_doubles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_clean_merge_same_pitch",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_shift_to_playable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "function:tests/test_chart_guarantees.py:test_merge_shifted_duplicates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_dev_gui.py",
+      "target": "function:tests/test_dev_gui.py:test_no_heavy_imports",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_dev_gui.py",
+      "target": "function:tests/test_dev_gui.py:test_list_songs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_prep.py",
+      "target": "function:tests/test_prep.py:test_ingest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_prep.py",
+      "target": "function:tests/test_prep.py:test_separate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_prep.py",
+      "target": "function:tests/test_prep.py:test_transcribe",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_prep.py",
+      "target": "function:tests/test_prep.py:test_chart_stub",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_prep.py",
+      "target": "function:tests/test_prep.py:test_jobs_stages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_pitch_tuner.py",
+      "target": "function:tests/test_pitch_tuner.py:test_open_strings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:pyproject.toml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/ARCHITECTURE.md",
+      "target": "config:tests/fixtures/chart/guitar.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/ARCHITECTURE.md",
+      "target": "config:tests/fixtures/notes/guitar.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/specs/pitch.md",
+      "target": "file:tests/test_pitch_tuner.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/specs/walking-skeleton.md",
+      "target": "file:tests/conftest.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/specs/walking-skeleton.md",
+      "target": "file:tests/test_formats.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/specs/walking-skeleton.md",
+      "target": "file:tests/test_chart_guarantees.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/specs/walking-skeleton.md",
+      "target": "file:tests/test_store.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/specs/walking-skeleton.md",
+      "target": "file:tests/test_prep.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:pyproject.toml",
+      "target": "file:.python-version",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_chart_guarantees.py",
+      "target": "config:tests/fixtures/chart/guitar.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_formats.py",
+      "target": "config:tests/fixtures/chart/guitar.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_formats.py",
+      "target": "config:tests/fixtures/notes/guitar.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_prep.py",
+      "target": "file:tests/fixtures/sample.wav",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test_dev_gui.py",
+      "target": "file:tests/fixtures/sample.wav",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "file:tests/fixtures/sample.wav",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:ui",
+      "name": "UI Layer",
+      "description": "Tkinter desktop GUI providing the tuner, songs, and chart tabs for real-time practice feedback.",
+      "nodeIds": [
+        "file:src/lodestone/dev_gui.py"
+      ]
+    },
+    {
+      "id": "layer:audio",
+      "name": "Audio Processing",
+      "description": "Real-time pitch detection via YIN algorithm and tuner smoothing/display logic for live instrument feedback.",
+      "nodeIds": [
+        "file:src/lodestone/pitch.py",
+        "file:src/lodestone/tuner.py"
+      ]
+    },
+    {
+      "id": "layer:prep-pipeline",
+      "name": "Prep Pipeline",
+      "description": "Offline song preparation stages — ingest, Demucs stem separation, Basic Pitch transcription, chart building, and background job orchestration.",
+      "nodeIds": [
+        "file:src/lodestone/jobs.py",
+        "file:src/lodestone/ingest.py",
+        "file:src/lodestone/separate.py",
+        "file:src/lodestone/transcribe.py",
+        "file:src/lodestone/chart.py"
+      ]
+    },
+    {
+      "id": "layer:data",
+      "name": "Data & Storage",
+      "description": "Central file-access layer managing the song folder layout, atomic JSON reads/writes, and the package entry point.",
+      "nodeIds": [
+        "file:src/lodestone/store.py",
+        "file:src/lodestone/__init__.py"
+      ]
+    },
+    {
+      "id": "layer:test",
+      "name": "Tests",
+      "description": "Pytest suite covering unit tests for audio, chart guarantees, store, and integration tests for the full prep pipeline.",
+      "nodeIds": [
+        "file:tests/conftest.py",
+        "file:tests/fixtures/sample.wav",
+        "file:tests/test_chart_guarantees.py",
+        "file:tests/test_dev_gui.py",
+        "file:tests/test_formats.py",
+        "file:tests/test_pitch_tuner.py",
+        "file:tests/test_prep.py",
+        "file:tests/test_store.py"
+      ]
+    },
+    {
+      "id": "layer:test-fixtures",
+      "name": "Test Fixtures",
+      "description": "JSON fixture files defining the handoff data shapes for chart, notes, song metadata, played events, and session scores used across tests.",
+      "nodeIds": [
+        "config:tests/fixtures/chart/guitar.json",
+        "config:tests/fixtures/notes/guitar.json",
+        "config:tests/fixtures/played_event.json",
+        "config:tests/fixtures/session_score.json",
+        "config:tests/fixtures/song.json"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation",
+      "description": "Architecture spec, module handoff contracts, feature specs, and project overview guiding the offline instrument practice app design.",
+      "nodeIds": [
+        "document:README.md",
+        "document:docs/ARCHITECTURE.md",
+        "document:docs/specs/pitch.md",
+        "document:docs/specs/walking-skeleton.md"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "Configuration",
+      "description": "Project build metadata, Python version pin, and Git line-ending settings for cross-platform development.",
+      "nodeIds": [
+        "config:pyproject.toml",
+        "file:.gitattributes",
+        "file:.python-version"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "README.md describes what lodestone is: a fully offline desktop app that helps musicians practice, with a tuner, auto-generated play-along charts, and a scoring mode. Reading it first sets the context for every architectural decision you will encounter — why there is a heavy ML pipeline, why the UI must never import torch, and why the app must run on battery with no internet connection.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Architecture Contract",
+      "description": "ARCHITECTURE.md is the authoritative reference for the module graph, the exact JSON shapes passed between modules (handoff contracts), and the five chart guarantees the app must satisfy. Every module in the codebase is designed to conform to these shapes; understanding them before reading any source file will make the data flowing between modules immediately recognizable.",
+      "nodeIds": [
+        "document:docs/ARCHITECTURE.md"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Project Configuration",
+      "description": "pyproject.toml defines the project's build metadata, pins Python to 3.12, and lists dependencies. The ML stack (Demucs, Basic Pitch) is grouped under an optional 'ml' extra so a developer can install just the UI dependencies without pulling in the heavyweight models. This split mirrors the architectural boundary between the UI process and the background prep process.",
+      "nodeIds": [
+        "config:pyproject.toml"
+      ],
+      "languageLesson": "In Python projects managed with uv or pip, optional dependency groups (extras_require / [project.optional-dependencies]) let you declare heavyweight dependencies separately from core ones. Installing 'package[ml]' vs 'package' gives you different dependency sets from the same pyproject.toml."
+    },
+    {
+      "order": 4,
+      "title": "Central Storage Layer",
+      "description": "store.py is the single most depended-upon module in the codebase, with a fan-in of 7 — every pipeline step and the GUI all go through it. It owns the song folder layout and enforces atomic JSON writes (write to a temp file, then rename) so a crash mid-write can never corrupt a song record. Understanding this module's API is the prerequisite for understanding every other module.",
+      "nodeIds": [
+        "file:src/lodestone/store.py"
+      ],
+      "languageLesson": "Atomic file writes in Python use the write-then-rename pattern: write data to a sibling temp file, then call os.replace() (or pathlib Path.rename()). On POSIX this is a single atomic syscall; on Windows, os.replace() handles the swap. This guarantees readers never see a partially written file."
+    },
+    {
+      "order": 5,
+      "title": "Pitch Detection Algorithm",
+      "description": "pitch.py implements the YIN algorithm, which estimates the fundamental frequency of a monophonic audio frame by finding the lag at which a signal best repeats itself. It operates purely on a NumPy array and returns a PitchReading with frequency and confidence values. This is the low-level primitive that powers the real-time tuner.",
+      "nodeIds": [
+        "file:src/lodestone/pitch.py",
+        "document:docs/specs/pitch.md"
+      ],
+      "languageLesson": "YIN is a time-domain pitch detection algorithm. It computes a difference function over a window of audio samples, normalizes it, and finds the first minimum below a confidence threshold. Because it works in the time domain it is computationally lightweight — suitable for real-time use on battery without a GPU."
+    },
+    {
+      "order": 6,
+      "title": "Tuner Smoothing and Display",
+      "description": "tuner.py wraps the raw PitchReading values from pitch.py with a smoothing pass to suppress jitter between frames, then converts the stabilized frequency into a TunerDisplay: the nearest note name, cents deviation, and an in-tune flag. The separation between raw detection (pitch.py) and display logic (tuner.py) keeps each function focused and independently testable.",
+      "nodeIds": [
+        "file:src/lodestone/tuner.py"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Desktop GUI",
+      "description": "dev_gui.py is the application shell. It hosts three tabs — TunerTab, SongsTab, and ChartTab — and wires together the modules introduced so far: it drives the audio loop through pitch.py and tuner.py, calls ingest.py when a user drops in a song, and delegates prep work to jobs.py. Its high fan-out (5 direct imports) reflects its role as the composition root; it is a coordinator, not a logic container.",
+      "nodeIds": [
+        "file:src/lodestone/dev_gui.py"
+      ],
+      "languageLesson": "Tkinter organizes a window with geometry managers (pack, grid, place) and a main event loop (mainloop()). Long-running work — like audio capture or ML processing — must run in a separate thread or process, because blocking the event loop freezes the whole UI. Lodestone uses multiprocessing for the prep pipeline precisely to keep the GUI responsive."
+    },
+    {
+      "order": 8,
+      "title": "Song Ingest",
+      "description": "ingest.py handles the first step a user takes: adding a song to the library. It computes a SHA-256 hash of the audio file to use as a stable, content-based ID, copies the file into the song folder, and writes the initial song.json via store.py. Using a content hash as the ID means importing the same file twice is idempotent and deduplicated automatically.",
+      "nodeIds": [
+        "file:src/lodestone/ingest.py"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Stem Separation",
+      "description": "separate.py runs Demucs (the htdemucs_6s model) on the ingested audio to split the song into six stems: vocals, bass, drums, guitar, piano, and other. It then mixes all non-guitar stems into a single backing-track WAV so the user can practice guitar against the full band minus themselves. All paths are resolved and written through store.py.",
+      "nodeIds": [
+        "file:src/lodestone/separate.py"
+      ],
+      "languageLesson": "Demucs is a waveform-domain source separation model. The '6s' variant separates into six stems using a U-Net architecture trained on mixture-to-stem pairs. Running it on CPU on a laptop takes roughly 2-5x real-time, so it must run in a background process, not the UI thread."
+    },
+    {
+      "order": 10,
+      "title": "Pitch Transcription",
+      "description": "transcribe.py runs Basic Pitch on the guitar stem WAV produced by separate.py. Unlike the monophonic YIN detector used for real-time tuning, Basic Pitch is a polyphonic model that returns a list of note events, each with onset time, offset time, pitch, and velocity. These raw events are the input to the chart builder in the next step.",
+      "nodeIds": [
+        "file:src/lodestone/transcribe.py"
+      ]
+    },
+    {
+      "order": 11,
+      "title": "Chart Building",
+      "description": "chart.py takes the raw note events from transcribe.py and applies a multi-step cleaning pipeline — deduplication, octave shifting to keep notes in guitar range, and string/fret assignment — to produce a playable guitar chart. The five guarantees from ARCHITECTURE.md (notes in range, valid fret numbers, no overlapping notes on the same string, etc.) are all enforced here.",
+      "nodeIds": [
+        "file:src/lodestone/chart.py"
+      ]
+    },
+    {
+      "order": 12,
+      "title": "Background Job Orchestration",
+      "description": "jobs.py is the boundary between the UI process and the ML pipeline. It launches the full prep sequence (ingest, separate, transcribe, chart) inside a separate multiprocessing.Process so the Tkinter event loop is never blocked by the heavy model inference. This module is also the enforcement point for the architectural rule that the UI never imports torch or Basic Pitch.",
+      "nodeIds": [
+        "file:src/lodestone/jobs.py"
+      ]
+    },
+    {
+      "order": 13,
+      "title": "Test Suite and Fixtures",
+      "description": "The test suite is organized around the same layers as the source: test_pitch_tuner.py verifies the YIN detector and tuner against synthesized sine waves; test_chart_guarantees.py enforces each of the five chart guarantees in isolation; test_store.py covers atomic writes and schema validation; test_formats.py validates fixture JSON files against the handoff shapes from ARCHITECTURE.md; and test_prep.py runs the full pipeline end-to-end. conftest.py generates a sample WAV on first run so all tests can operate offline.",
+      "nodeIds": [
+        "file:tests/conftest.py",
+        "file:tests/test_pitch_tuner.py",
+        "file:tests/test_chart_guarantees.py",
+        "file:tests/test_store.py",
+        "file:tests/test_formats.py"
+      ],
+      "languageLesson": "Pytest's conftest.py is auto-loaded before any test in the same directory tree. Fixtures defined there (with @pytest.fixture) are available to all tests without an explicit import. Session-scoped fixtures (scope='session') run once per test run, making them ideal for expensive setup like synthesizing an audio file."
+    }
+  ]
+}

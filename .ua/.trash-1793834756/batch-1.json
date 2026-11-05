@@ -1,0 +1,473 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lodestone/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "src/lodestone/__init__.py",
+      "summary": "Package entry point for the lodestone module; currently contains a placeholder main() function that prints the package name.",
+      "tags": ["entry-point", "barrel", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lodestone/dev_gui.py",
+      "type": "file",
+      "name": "dev_gui.py",
+      "filePath": "src/lodestone/dev_gui.py",
+      "summary": "Main Tkinter desktop GUI for lodestone, providing TunerTab, SongsTab, and ChartTab panels inside a tabbed App window, along with helper drawing and data functions.",
+      "tags": ["entry-point", "component", "event-handler", "ui"],
+      "complexity": "complex",
+      "languageNotes": "Uses tkinter/ttk for a cross-platform dark-themed GUI; audio I/O via sounddevice with a background-thread poll loop."
+    },
+    {
+      "id": "file:src/lodestone/jobs.py",
+      "type": "file",
+      "name": "jobs.py",
+      "filePath": "src/lodestone/jobs.py",
+      "summary": "Launches and manages the song preparation pipeline (separate, transcribe, chart) in a background multiprocessing.Process, writing stage progress back to song.json via SongStore.",
+      "tags": ["service", "data-pipeline", "background-job"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lodestone/pitch.py",
+      "type": "file",
+      "name": "pitch.py",
+      "filePath": "src/lodestone/pitch.py",
+      "summary": "Implements the YIN algorithm for monophonic pitch detection from a NumPy audio frame, returning a PitchReading dataclass with frequency, MIDI note, confidence, and RMS.",
+      "tags": ["utility", "audio", "algorithm"],
+      "complexity": "moderate",
+      "languageNotes": "Pure-NumPy YIN implementation with parabolic interpolation for sub-sample accuracy; no external pitch library dependency."
+    },
+    {
+      "id": "file:src/lodestone/tuner.py",
+      "type": "file",
+      "name": "tuner.py",
+      "filePath": "src/lodestone/tuner.py",
+      "summary": "Provides the Tuner class that smooths a rolling history of PitchReadings and produces a TunerDisplay with note name, cents offset, nearest guitar string, and in-tune flag.",
+      "tags": ["service", "audio", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:TunerTab",
+      "type": "class",
+      "name": "TunerTab",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [167, 379],
+      "summary": "Tkinter tab widget for the real-time chromatic tuner; manages the audio input stream, polls pitch detections, and updates a needle-and-chip display.",
+      "tags": ["component", "event-handler", "audio"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:SongsTab",
+      "type": "class",
+      "name": "SongsTab",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [387, 606],
+      "summary": "Tkinter tab widget that lists all songs in the store, allows importing WAV files, triggering the prep pipeline, and opening the resulting chart in ChartTab.",
+      "tags": ["component", "event-handler", "data-model"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:ChartTab",
+      "type": "class",
+      "name": "ChartTab",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [614, 907],
+      "summary": "Tkinter tab widget that renders a guitar tablature chart on a scrollable canvas, plays back the backing audio, and highlights active notes in sync.",
+      "tags": ["component", "event-handler", "audio"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/dev_gui.py:App",
+      "type": "class",
+      "name": "App",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [915, 1069],
+      "summary": "Root application class that constructs the main Tk window, applies the dark theme, assembles the three tabs, and wires the status bar and close handler.",
+      "tags": ["entry-point", "component", "singleton"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lodestone/dev_gui.py:list_songs",
+      "type": "function",
+      "name": "list_songs",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [131, 143],
+      "summary": "Iterates the store root directory and reads each song's metadata, returning a list of song dicts for display in the songs table.",
+      "tags": ["utility", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/dev_gui.py:active_note_ids",
+      "type": "function",
+      "name": "active_note_ids",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [122, 128],
+      "summary": "Returns the set of canvas item IDs for notes that are sounding at time t, used to highlight notes during playback.",
+      "tags": ["utility", "audio"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/dev_gui.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "src/lodestone/dev_gui.py",
+      "lineRange": [1077, 1080],
+      "summary": "Entry point that creates the Tk root window, instantiates the App, and starts the main event loop.",
+      "tags": ["entry-point", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/jobs.py:start_prep",
+      "type": "function",
+      "name": "start_prep",
+      "filePath": "src/lodestone/jobs.py",
+      "lineRange": [15, 33],
+      "summary": "Spawns a non-daemon background process to run the full prep pipeline (separate, transcribe, chart) for a given song and returns the Process handle.",
+      "tags": ["background-job", "service"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/jobs.py:_run_prep",
+      "type": "function",
+      "name": "_run_prep",
+      "filePath": "src/lodestone/jobs.py",
+      "lineRange": [36, 66],
+      "summary": "Executes the sequential separate → transcribe → chart pipeline inside the child process, updating song.json stage flags before and after each step.",
+      "tags": ["background-job", "data-pipeline"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lodestone/jobs.py:_set_stage",
+      "type": "function",
+      "name": "_set_stage",
+      "filePath": "src/lodestone/jobs.py",
+      "lineRange": [69, 83],
+      "summary": "Atomically reads and updates a single stage value in song.json via SongStore, supporting both top-level and target-keyed stage entries.",
+      "tags": ["utility", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "class",
+      "name": "PitchReading",
+      "filePath": "src/lodestone/pitch.py",
+      "lineRange": [11, 15],
+      "summary": "Dataclass holding the result of a single pitch detection: frequency in Hz, MIDI note value, YIN confidence score, and RMS energy.",
+      "tags": ["data-model", "type-definition", "audio"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lodestone/pitch.py:detect",
+      "type": "function",
+      "name": "detect",
+      "filePath": "src/lodestone/pitch.py",
+      "lineRange": [22, 93],
+      "summary": "Runs the YIN pitch detection algorithm on a mono float32 audio frame, returning a PitchReading with frequency, MIDI, confidence, and RMS.",
+      "tags": ["algorithm", "audio", "utility"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/lodestone/tuner.py:TunerDisplay",
+      "type": "class",
+      "name": "TunerDisplay",
+      "filePath": "src/lodestone/tuner.py",
+      "lineRange": [17, 21],
+      "summary": "Dataclass carrying the display state for the tuner UI: note name string, cents offset, nearest guitar string index, and in-tune boolean.",
+      "tags": ["data-model", "type-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lodestone/tuner.py:Tuner",
+      "type": "class",
+      "name": "Tuner",
+      "filePath": "src/lodestone/tuner.py",
+      "lineRange": [35, 61],
+      "summary": "Stateful tuner that maintains a rolling median history of MIDI readings from PitchReading values and produces a TunerDisplay on each update.",
+      "tags": ["service", "audio", "utility"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/jobs.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/pitch.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "file:src/lodestone/tuner.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "file:src/lodestone/store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "file:src/lodestone/pitch.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:TunerTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:SongsTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:ChartTab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:list_songs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:active_note_ids",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:TunerTab",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:SongsTab",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:ChartTab",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "class:src/lodestone/dev_gui.py:App",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/dev_gui.py",
+      "target": "function:src/lodestone/dev_gui.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:start_prep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:_run_prep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:_set_stage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/jobs.py",
+      "target": "function:src/lodestone/jobs.py:start_prep",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "function:src/lodestone/pitch.py:detect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/pitch.py",
+      "target": "function:src/lodestone/pitch.py:detect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:TunerDisplay",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:Tuner",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:TunerDisplay",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lodestone/tuner.py",
+      "target": "class:src/lodestone/tuner.py:Tuner",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:SongsTab",
+      "target": "function:src/lodestone/jobs.py:start_prep",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:SongsTab",
+      "target": "file:src/lodestone/ingest.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:TunerTab",
+      "target": "class:src/lodestone/tuner.py:Tuner",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:TunerTab",
+      "target": "function:src/lodestone/pitch.py:detect",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/dev_gui.py:App",
+      "target": "file:src/lodestone/store.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/jobs.py:_run_prep",
+      "target": "function:src/lodestone/jobs.py:_set_stage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/lodestone/jobs.py:_set_stage",
+      "target": "file:src/lodestone/store.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:src/lodestone/tuner.py:Tuner",
+      "target": "class:src/lodestone/pitch.py:PitchReading",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}
