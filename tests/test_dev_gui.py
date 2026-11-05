@@ -11,8 +11,12 @@ import pytest
 from apollo.dev_gui import (
     active_note_ids,
     cents_to_needle_x,
+    format_elapsed,
     list_songs,
     play_line_seconds,
+    prep_caption,
+    prep_display_states,
+    prep_step_states,
     stage_row,
     string_to_y,
     time_to_x,
@@ -79,6 +83,78 @@ def test_stage_row() -> None:
         song = json.load(f)
     row = stage_row(song, "guitar")
     assert row == ("Sample Song", "3f9a1c0e7b2d4a61", "✓", "✓", "✓", "✓")
+
+
+def _song_with_stages(separate: str, transcribe: str, chart: str) -> dict:
+    return {
+        "stages": {
+            "ingest": "done",
+            "separate": separate,
+            "transcribe": {"guitar": transcribe},
+            "chart": {"guitar": chart},
+        }
+    }
+
+
+def test_prep_step_states_reads_plain_and_per_target_stages() -> None:
+    song = _song_with_stages("done", "running", "pending")
+    assert prep_step_states(song, "guitar") == ["done", "running", "pending"]
+
+
+def test_prep_step_states_missing_stages_are_pending() -> None:
+    assert prep_step_states({}, "guitar") == ["pending", "pending", "pending"]
+
+
+def test_display_states_hide_leftovers_from_an_earlier_run() -> None:
+    # Re-running prep: step 1 is running again, steps 2 and 3 still say done from last time.
+    leftover = ["running", "done", "done"]
+    assert prep_display_states(leftover, finished=False) == ["running", "pending", "pending"]
+
+
+def test_display_states_before_first_step_starts_are_all_pending() -> None:
+    assert prep_display_states(["done", "done", "failed"], finished=False) == [
+        "pending", "pending", "pending",
+    ]
+
+
+def test_display_states_when_finished_are_unchanged() -> None:
+    assert prep_display_states(["done", "failed", "pending"], finished=True) == [
+        "done", "failed", "pending",
+    ]
+
+
+def test_format_elapsed() -> None:
+    assert format_elapsed(0.0) == "0:00"
+    assert format_elapsed(9.9) == "0:09"
+    assert format_elapsed(83.4) == "1:23"
+    assert format_elapsed(-5.0) == "0:00"
+
+
+def test_caption_while_running_names_step_and_elapsed_time() -> None:
+    caption = prep_caption(["done", "running", "pending"], 75.0, finished=False)
+    assert "Step 2 of 3" in caption
+    assert "1:15 elapsed" in caption
+
+
+def test_caption_before_any_step_runs() -> None:
+    caption = prep_caption(["pending", "pending", "pending"], 2.0, finished=False)
+    assert caption.startswith("Starting prep")
+
+
+def test_caption_when_complete() -> None:
+    caption = prep_caption(["done", "done", "done"], 192.0, finished=True)
+    assert caption == "Prep complete in 3:12."
+
+
+def test_caption_when_a_step_failed_names_that_step() -> None:
+    caption = prep_caption(["done", "failed", "pending"], 50.0, finished=True)
+    assert "Step 2 of 3 failed" in caption
+    assert "prep.log" in caption
+
+
+def test_caption_when_process_stopped_without_marking_a_step() -> None:
+    caption = prep_caption(["done", "running", "pending"], 50.0, finished=True)
+    assert caption.startswith("Prep stopped before finishing")
 
 
 def test_play_line_seconds() -> None:

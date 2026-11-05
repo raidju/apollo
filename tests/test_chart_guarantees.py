@@ -10,6 +10,7 @@ from apollo.chart import (
     _drop_out_of_range,
     _drop_short_or_quiet,
     _drop_octave_doubles,
+    _is_ghost,
     _merge_same_pitch,
     _merge_shifted_duplicates,
     _shift_to_playable,
@@ -115,6 +116,37 @@ def test_clean_drop_octave_doubles():
     assert 40 in midis
     assert 52 not in midis
     assert 55 in midis
+
+
+def test_ghost_two_octaves_above_louder_note_is_dropped():
+    parent = _ev(midi=50, amplitude=0.5)
+    ghost = _ev(midi=74, amplitude=0.4)          # 24 semitones up, quieter
+    assert _is_ghost(ghost, [parent, ghost])
+
+
+def test_ghost_three_octaves_above_louder_note_is_dropped():
+    parent = _ev(midi=45, amplitude=0.5)
+    ghost = _ev(midi=81, amplitude=0.4)          # 36 semitones up, quieter
+    assert _is_ghost(ghost, [parent, ghost])
+
+
+def test_two_octaves_up_but_louder_is_kept():
+    lower = _ev(midi=50, amplitude=0.4)
+    melody = _ev(midi=74, amplitude=0.5)         # a real melody note over the bass
+    assert not _is_ghost(melody, [lower, melody])
+
+
+def test_two_octaves_up_but_not_at_same_time_is_kept():
+    lower = _ev(midi=50, start=0.0, end=0.5, amplitude=0.6)
+    later = _ev(midi=74, start=0.6, end=1.0, amplitude=0.3)
+    assert not _is_ghost(later, [lower, later])
+
+
+def test_other_wide_intervals_are_not_ghosts():
+    lower = _ev(midi=50, amplitude=0.6)
+    for gap in (23, 25, 28, 31, 35):             # near or between the octave gaps
+        upper = _ev(midi=50 + gap, amplitude=0.3)
+        assert not _is_ghost(upper, [lower, upper]), f"gap {gap} wrongly treated as ghost"
 
 
 def test_clean_merge_same_pitch():
