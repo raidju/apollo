@@ -108,7 +108,7 @@ def _find_ml_python() -> str | None:
     import shutil
     exe_path = pathlib.Path(sys.executable)
     # Search both the exe's own directory and its parent — the exe lives in
-    # launch/ so the venv is one level up at lodestone/.venv/.
+    # launch/ so the venv is one level up at apollo/.venv/.
     for root in [exe_path.parent, exe_path.parent.parent]:
         for rel in [
             pathlib.Path(".venv") / "Scripts" / "python.exe",  # Windows
